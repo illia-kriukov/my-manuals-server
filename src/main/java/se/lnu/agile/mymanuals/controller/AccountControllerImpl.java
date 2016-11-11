@@ -15,7 +15,7 @@ import se.lnu.agile.mymanuals.service.account.impl.AccountServiceImpl;
 public class AccountControllerImpl implements AccountController {
 
     @Autowired
-    private AccountService accountService = new AccountServiceImpl();
+    private AccountService accountService;
 
     @Override
     @RequestMapping(value = "/representative", method = RequestMethod.GET)

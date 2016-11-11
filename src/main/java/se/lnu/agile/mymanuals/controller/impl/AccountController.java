@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 public interface AccountController {
 
-    @RequestMapping(value = "/account", method = RequestMethod.GET)
+    @RequestMapping(value = "/representative", method = RequestMethod.GET)
     RepresentativeDto getRepresentativeInfoInfoByEmail(@RequestParam("email") String email);
 
 }
