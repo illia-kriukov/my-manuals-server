@@ -1,12 +1,15 @@
 package se.lnu.agile.mymanuals.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
- * Created by ilyakruikov on 11/10/16.
+ * Created by ilyakruikov on 11/11/16.
  */
 @Entity
-public class Representative {
+public class Company {
 
     @Id
     @GeneratedValue
@@ -18,11 +21,11 @@ public class Representative {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToOne
-    private Company company;
+    @Column
+    private String description;
 
     public Long getId() {
         return id;
@@ -56,12 +59,12 @@ public class Representative {
         this.name = name;
     }
 
-    public Company getCompany() {
-        return company;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }
