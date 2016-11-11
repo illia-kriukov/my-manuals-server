@@ -1,4 +1,4 @@
-package dv611.mymanuals;
+package se.lnu.agile.mymanuals;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

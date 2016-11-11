@@ -22,7 +22,23 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>1.4.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.3</version>
         </dependency>
     </dependencies>
 
@@ -30,7 +46,34 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>qa</id>
+            <properties>
+                <database.driverClassName>com.mysql.jdbc.Driver</database.driverClassName>
+                <database.url>jdbc:mysql://eu-cdbr-azure-north-e.cloudapp.net:3306/mymanuals?createDatabaseIfNotExist=true</database.url>
+                <database.user>b6f09c50fe90e7</database.user>
+                <database.password>6d166574</database.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <database.driverClassName>com.mysql.jdbc.Driver</database.driverClassName>
+                <database.url>jdbc:mysql://localhost/mymanuals?createDatabaseIfNotExist=true</database.url>
+                <database.user>root</database.user>
+                <database.password></database.password>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
