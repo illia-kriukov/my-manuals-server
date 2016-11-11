@@ -1,28 +1,19 @@
-package se.lnu.agile.mymanuals.model;
-
-import javax.persistence.*;
+package se.lnu.agile.mymanuals.dto;
 
 /**
- * Created by ilyakruikov on 11/10/16.
+ * Created by ilyakruikov on 11/11/16.
  */
-@Entity
-public class Representative {
+public class CompanyDto {
 
-    @Id
-    @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String name;
 
-    @ManyToOne
-    private Company company;
+    private String description;
 
     public Long getId() {
         return id;
@@ -56,12 +47,12 @@ public class Representative {
         this.name = name;
     }
 
-    public Company getCompany() {
-        return company;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

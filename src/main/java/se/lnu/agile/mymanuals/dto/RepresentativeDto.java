@@ -11,6 +11,10 @@ public class RepresentativeDto {
 
     private String password;
 
+    private String name;
+
+    private CompanyDto company;
+
     public Long getId() {
         return id;
     }
@@ -33,6 +37,22 @@ public class RepresentativeDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public CompanyDto getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyDto company) {
+        this.company = company;
     }
 
 }

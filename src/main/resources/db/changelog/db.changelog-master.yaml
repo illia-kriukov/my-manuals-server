@@ -1,25 +1,84 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
-      author: illia.kriukov
-      changes:
-        - createTable:
-            tableName: representative
-            columns:
-              - column:
-                  name: id
-                  type: int
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: email
-                  type: varchar(50)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: password
-                  type: varchar(50)
-                  constraints:
-                    nullable: false
+        id: 1
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: company
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: email
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: password
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: name
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: description
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+  - changeSet:
+        id: 2
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: representative
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: email
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: password
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: name
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: company_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_company_id
+                      reference: company(id)
+  - changeSet:
+        id: 3
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: company_id
+              baseTableName: representative
+              constraintName: fk_company_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: company
