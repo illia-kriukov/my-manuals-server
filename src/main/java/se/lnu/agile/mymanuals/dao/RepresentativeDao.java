@@ -10,4 +10,6 @@ public interface RepresentativeDao extends CrudRepository<Representative, Long> 
 
     Representative findByEmail(String email);
 
+    Representative addRepresentative (Representative representative);
+
 }

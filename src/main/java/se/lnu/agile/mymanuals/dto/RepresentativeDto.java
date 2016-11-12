@@ -15,6 +15,18 @@ public class RepresentativeDto {
 
     private CompanyDto company;
 
+    public RepresentativeDto(Long id, String email, String password, String name, CompanyDto company) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.company = company;
+    }
+
+    public RepresentativeDto() {
+
+    }
+
     public Long getId() {
         return id;
     }
