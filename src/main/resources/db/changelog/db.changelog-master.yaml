@@ -32,7 +32,7 @@ databaseChangeLog:
                     name: description
                     type: varchar(50)
                     constraints:
-                      nullable: false
+                      nullable: true
   - changeSet:
         id: 2
         author: illia.kriukov
