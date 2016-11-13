@@ -1,5 +1,6 @@
 package se.lnu.agile.mymanuals.service;
 
+import se.lnu.agile.mymanuals.dto.CompanyDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 
 /**
