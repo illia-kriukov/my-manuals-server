@@ -17,9 +17,12 @@ public class RepresentativeDtoToRepresentative implements Function<Representativ
     public Representative apply (RepresentativeDto representativeDto) {
         Representative representative = new Representative();
         BeanUtils.copyProperties(representativeDto, representative);
+
         Company company = new Company();
         BeanUtils.copyProperties(representativeDto.getCompany(), company);
+
         representative.setCompany(company);
         return representative;
     }
+
 }

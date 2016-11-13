@@ -24,7 +24,6 @@ public class RepresentativeDto {
     }
 
     public RepresentativeDto() {
-
     }
 
     public Long getId() {
