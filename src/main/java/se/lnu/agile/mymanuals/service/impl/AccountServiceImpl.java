@@ -35,7 +35,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void createRepresentative(RepresentativeSignUpDto dto) {
-        if (verifyRepresentativeSignUp(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getCompanyEmail(), dto.getCompanyPassword())) {
+        if (validateRepresentativeSignUp(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getCompanyEmail(), dto.getCompanyPassword())) {
             Representative representative =
                     new Representative(dto.getEmail(), dto.getPassword(), dto.getName(), companyDao.findByEmail(dto.getCompanyEmail()));
             representativeConverter.apply(representativeDao.save(representative));
@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Perform verification of the representative's data at Sign-Up.
+     * Perform validation of the representative's data at Sign-Up.
      *
      * Checks:
      * -> Company email and representative email are not the same
@@ -51,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
      * -> Representative email doesn't exists in company table
      * -> Given companyEmail and companyPassword are correct according to company table in the DB
      */
-    private boolean verifyRepresentativeSignUp(String email, String password, String name, String companyEmail, String companyPassword){
+    private boolean validateRepresentativeSignUp(String email, String password, String name, String companyEmail, String companyPassword){
         if (email.equals(companyEmail)) {
             String msg = "Failed to create representative '" + email + "'. The representative email and the company email are the same.";
             throw new RegistrationException(msg);
