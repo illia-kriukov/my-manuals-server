@@ -37,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public RepresentativeDto createRepresentative(String email, String password, String name, String companyEmail, String companyPassword) {
-        if( EvaluateRepresentativeSignIn (email, password, name, companyEmail, companyPassword)){
+        if( verifyRepresentativeSignIn(email, password, name, companyEmail, companyPassword)){
             Representative representative = new Representative();
             representative.setEmail(email);
             representative.setPassword(password);
@@ -52,36 +52,29 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-    private boolean EvaluateRepresentativeSignIn( String email,String password, String name,String cemail, String cpassword){
-        // Check that company email and representative email are not the same
-        if(email == cemail){  return false; }
-
-        // Representative email already exists in representative table
+    /**
+     * Perform verification of the representative's data at Sign-Up
+     * Checks:
+     * -> Company email and representative email are not the same
+     * -> Representative email already exists in representative table
+     * -> Representative email already exists in company table
+     * -> Given companyEmail and companyPassword are correct according to company table in the DB
+     * -> Representative's name format (at least two words starting with UpperCase)
+     * -> Password is longer that 6 characters
+     * -> Representative's Email format
+     */
+    private boolean verifyRepresentativeSignIn( String email,String password, String name,String companyEmail, String companyPassword){
+        if(email.equals(companyEmail)){  return false; }
         if(getRepresentative(email) != null){  return false; }
-
-        // Representative email already exists in company table
         if(companyDao.findByEmail(email) != null){  return false; }
-
-        // Check that given company_email and company_password are correct
-        Company company = companyDao.findByEmail(cemail);
-        if( company == null ){ return false;}  //Company_email doesn't exist in database
-        if( !company.getPassword().equals(cpassword) ){ return false; } // Wrong company_password
-
-
-        // Check name
-        if( !CheckName(name) ){ return false;}
-
-        // Check that password is longer that 6 characters
-        if( password.length()<6) { return false; }
-
-        // Check email format
-        if( !CheckEmailFormat(email) ){ return false;}
-
-        // Evaluation passed successfully
+        Company company = companyDao.findByEmail(companyEmail);
+        if( company == null ){ return false;}
+        if( !company.getPassword().equals(companyPassword) ){ return false; }
+        if (!checkName(name) || password.length() < 6 || !checkEmailFormat(email)) { return false; }
         return true;
     }
 
-    private boolean CheckEmailFormat(String email){
+    private boolean checkEmailFormat(String email){
         String EMAIL_PATTERN =   "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                 + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
@@ -89,11 +82,9 @@ public class AccountServiceImpl implements AccountService {
         return matcher.matches();
     }
 
-    private boolean CheckName(String name){
+    private boolean checkName(String name){
         String[] temp = name.split(" ");
-        // Check that name is at least two words (name-surname)
         if(temp.length<2) { return false;}
-        // Check that words start with Upper case letter
         for(int i=0; i<temp.length; i++){
             char firstLetter = temp[i].charAt(0);
             if(firstLetter<'A' || firstLetter>'Z'){ return false;}
