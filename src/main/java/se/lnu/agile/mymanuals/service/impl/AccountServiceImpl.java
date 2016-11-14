@@ -68,9 +68,9 @@ public class AccountServiceImpl implements AccountService {
         if(getRepresentative(email) != null){  return false; }
         if(companyDao.findByEmail(email) != null){  return false; }
         Company company = companyDao.findByEmail(companyEmail);
-        if( company == null ){ return false;}
-        if( !company.getPassword().equals(companyPassword) ){ return false; }
-        if (!checkName(name) || password.length() < 6 || !checkEmailFormat(email)) { return false; }
+        if( company == null ) { return false;}
+        if( !company.getPassword().equals(companyPassword) ) { return false; }
+        if( !checkName(name) || password.length() < 6 || !checkEmailFormat(email)) { return false; }
         return true;
     }
 
