@@ -8,22 +8,25 @@ import javax.validation.constraints.Pattern;
  */
 public class RepresentativeSignUpDto {
 
-    @NotNull
-    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
+    @NotNull(message = "Email should not be empty.")
+    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",
+            message = "Incorrect email format.")
     private String email;
 
-    @NotNull
-    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$")
+    @NotNull(message = "Password should not be empty.")
+    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$",
+            message = "Password should be at least 6 symbols.")
     private String password;
 
-    @NotNull
-    @Pattern(regexp = "^[a-zA-Z- ]*$")
+    @NotNull(message = "Name should not be empty.")
+    @Pattern(regexp = "^[a-zA-Z- ]*$",
+            message = "Name can contains only letters and '-'.")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Company email should not be empty.")
     private String companyEmail;
 
-    @NotNull
+    @NotNull(message = "Company password should not be empty.")
     private String companyPassword;
 
     public String getEmail() {
