@@ -24,6 +24,16 @@ public class Representative {
     @ManyToOne
     private Company company;
 
+    public Representative(String email, String password, String name, Company company) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.company = company;
+    }
+
+    public Representative() {
+    }
+
     public Long getId() {
         return id;
     }
