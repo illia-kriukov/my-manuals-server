@@ -7,3 +7,5 @@ Back-end part of the "My Manuals" application by Team A. Autumn 2016.
 3. Clone 'my-manuals-server' repository;
 4. Navigate to the root folder;
 5. Run .sh (if you use Unix based OS) or .bat (for Windows OS) file.
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/5b8a77bdf5ddeb8388dc)
