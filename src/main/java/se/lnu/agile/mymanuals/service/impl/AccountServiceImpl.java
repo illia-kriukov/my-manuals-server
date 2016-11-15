@@ -53,22 +53,24 @@ public class AccountServiceImpl implements AccountService {
      */
     private boolean validateRepresentativeSignUp(String email, String password, String name, String companyEmail, String companyPassword){
         if (email.equals(companyEmail)) {
-            String msg = "Failed to create representative '" + email + "'. The representative email and the company email are the same.";
-            throw new RegistrationException(msg);
+            String msg = "Failed to create representative '%s'. The representative email and the company email are the same.";
+            throw new RegistrationException(String.format(msg, email));
         } else if (getRepresentative(email) != null){
-            String msg = "Failed to create representative '" + email + "'. The representative with such email already exists.";
-            throw new RegistrationException(msg);
+            String msg = "Failed to create representative '%s'. The representative with such email already exists.";
+            throw new RegistrationException(String.format(msg, email));
         } else if (companyDao.findByEmail(email) != null){
-            String msg = "Failed to create representative '" + email + "'. The company with such email already exists.";
-            throw new RegistrationException(msg);
+            String msg = "Failed to create representative '%s'. The company with such email already exists.";
+            throw new RegistrationException(String.format(msg, email));
         }
 
         Company company = companyDao.findByEmail(companyEmail);
 
         if (company == null) {
-            throw new RegistrationException("Failed to create representative '" + email + "'. The company with such email does not exists.");
+            String msg = "Failed to create representative '%s'. The company with such email does not exists.";
+            throw new RegistrationException(String.format(msg, email));
         } else if (!company.getPassword().equals(companyPassword)) {
-            throw new RegistrationException("Failed to create representative '" + email + "'. The company password is incorrect.");
+            String msg = "Failed to create representative '%s'. The company password is incorrect.";
+            throw new RegistrationException(String.format(msg, email));
         }
 
         return true;
