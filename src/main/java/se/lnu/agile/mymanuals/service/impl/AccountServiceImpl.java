@@ -2,9 +2,11 @@ package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.lnu.agile.mymanuals.converter.CompanyToCompanyDto;
 import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeDto;
 import se.lnu.agile.mymanuals.dao.CompanyDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
+import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeSignUpDto;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
@@ -19,13 +21,24 @@ import se.lnu.agile.mymanuals.service.AccountService;
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
-    private RepresentativeDao representativeDao;
-
-    @Autowired
     private CompanyDao companyDao;
 
     @Autowired
+    private RepresentativeDao representativeDao;
+
+    @Autowired
+    private CompanyToCompanyDto companyConverter;
+
+    @Autowired
     private RepresentativeToRepresentativeDto representativeConverter;
+
+    @Override
+    public void createCompany(CompanySignUpDto dto) {
+        if (validateCompanySignUp(dto.getEmail())) {
+            Company company = new Company(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getDescription());
+            companyConverter.apply(companyDao.save(company));
+        }
+    }
 
     @Override
     public RepresentativeDto getRepresentative(String email) {
@@ -43,6 +56,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * Perform validation of the companies's data at Sign-Up.
+     *
+     * Checks:
+     * -> Company email doesn't exists in company table
+     */
+    private boolean validateCompanySignUp(String email){
+        if (companyDao.findByEmail(email) != null) {
+            String msg = "Failed to create company '%s'. The company with such email already exists.";
+            throw new RegistrationException(String.format(msg, email));
+        }
+        return true;
+    }
+
+    /**
      * Perform validation of the representative's data at Sign-Up.
      *
      * Checks:
@@ -55,10 +82,10 @@ public class AccountServiceImpl implements AccountService {
         if (email.equals(companyEmail)) {
             String msg = "Failed to create representative '%s'. The representative email and the company email are the same.";
             throw new RegistrationException(String.format(msg, email));
-        } else if (getRepresentative(email) != null){
+        } else if (representativeDao.findByEmail(email) != null) {
             String msg = "Failed to create representative '%s'. The representative with such email already exists.";
             throw new RegistrationException(String.format(msg, email));
-        } else if (companyDao.findByEmail(email) != null){
+        } else if (companyDao.findByEmail(email) != null) {
             String msg = "Failed to create representative '%s'. The company with such email already exists.";
             throw new RegistrationException(String.format(msg, email));
         }
