@@ -31,6 +31,15 @@ public class Representative {
         this.company = company;
     }
 
+    public Representative(Representative representative) {
+        super();
+        this.id = representative.getId();
+        this.email = representative.getEmail();
+        this.password = representative.getPassword();
+        this.name = representative.getName();
+        this.company = representative.getCompany();
+    }
+
     public Representative() {
     }
 
