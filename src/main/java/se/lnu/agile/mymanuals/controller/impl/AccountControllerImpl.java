@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import se.lnu.agile.mymanuals.controller.AccountController;
+import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.dto.RepresentativeSignUpDto;
@@ -23,6 +24,12 @@ public class AccountControllerImpl implements AccountController {
 
     @Autowired
     private AccountService accountService;
+
+    @RequestMapping(value = "/company", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void createCompany(@RequestBody @Valid CompanySignUpDto companySignUpDto) {
+        accountService.createCompany(companySignUpDto);
+    }
 
     @Override
     @RequestMapping(value = "/representative", method = RequestMethod.GET)

@@ -27,6 +27,16 @@ public class Company {
     @Column
     private String description;
 
+    public Company(String email, String password, String name, String description) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.description = description;
+    }
+
+    public Company() {
+    }
+
     public Long getId() {
         return id;
     }
