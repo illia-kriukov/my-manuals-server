@@ -18,6 +18,7 @@ import javax.validation.Valid;
 /**
  * Created by ilyakruikov on 11/10/16.
  */
+@CrossOrigin
 @RestController
 public class AccountControllerImpl implements AccountController {
 
