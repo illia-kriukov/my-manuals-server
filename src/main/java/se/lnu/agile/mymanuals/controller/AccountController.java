@@ -25,4 +25,8 @@ public interface AccountController {
     @ResponseStatus(value = HttpStatus.CREATED)
     void createRepresentative(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto);
 
+    @RequestMapping(value = "/category", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    void createCategory(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto);
+
 }

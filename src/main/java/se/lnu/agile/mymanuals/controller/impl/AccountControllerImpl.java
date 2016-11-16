@@ -44,6 +44,11 @@ public class AccountControllerImpl implements AccountController {
         accountService.createRepresentative(representativeSignUpDto);
     }
 
+    @Override
+    public void createCategory(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto) {
+        //TODO Daniel will do stuff soon here
+    }
+
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(MethodArgumentNotValidException e) {
