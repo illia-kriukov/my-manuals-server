@@ -1,6 +1,6 @@
 databaseChangeLog:
-  - changeSet:
-        id: 1
+	- changeSet:
+		id: 1
         author: illia.kriukov
         changes:
           - createTable:
@@ -82,3 +82,86 @@ databaseChangeLog:
               onUpdate: RESTRICT
               referencedColumnNames: id
               referencedTableName: company
+			  
+  - changeSet:
+        id: 4
+        author: Kazilas.Panagiotis
+        changes:
+        - createTable:
+			tableName: product
+            columns:
+            - column:
+				name: id
+				type: int
+				autoIncrement: true
+				constraints:
+				primaryKey: true
+				nullable: false
+            - column:
+				name: name
+				type: varchar(50)
+				constraints:
+				nullable: false
+            - column:
+				name: description
+				type: varchar(50)
+				constraints:
+				nullable: true
+			- column:
+				name: company
+				type: int
+				nullable: false
+		- createTable:
+			tableName: category
+            columns:
+            - column:
+              name: id
+              type: int
+              autoIncrement: true
+              constraints:
+              primaryKey: true
+              nullable: false
+            - column:
+              name: name
+              type: varchar(50)
+              constraints:
+              nullable: false
+		- createTable:
+			tableName: productCategories
+            columns:
+            - column:
+              name: product_id
+              type: int
+              constraints:
+              primaryKey: true
+              nullable: false
+            - column:
+              name: category_id
+              type: int
+              constraints:
+              nullable: false
+			  
+		- addForeignKeyConstraint:
+              baseColumnNames: company_id
+              baseTableName: product
+              constraintName: fk_company_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: company
+		- addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: productCategories
+              constraintName: fk_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product
+		- addForeignKeyConstraint:
+              baseColumnNames: category_id
+              baseTableName: productCategories
+              constraintName: fk_category_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: category
