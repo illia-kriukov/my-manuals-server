@@ -1,5 +1,6 @@
 package se.lnu.agile.mymanuals.service;
 
+import se.lnu.agile.mymanuals.dto.CategorySignUpDto;
 import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeSignUpDto;
@@ -14,5 +15,7 @@ public interface AccountService {
     RepresentativeDto getRepresentative(String email);
 
     void createRepresentative(RepresentativeSignUpDto dto);
+
+    void createCategory(CategorySignUpDto dto);
 
 }

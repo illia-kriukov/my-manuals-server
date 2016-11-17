@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import se.lnu.agile.mymanuals.controller.AccountController;
+import se.lnu.agile.mymanuals.dto.CategorySignUpDto;
 import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class AccountControllerImpl implements AccountController {
     @Autowired
     private AccountService accountService;
 
+    @Override
     @RequestMapping(value = "/company", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createCompany(@RequestBody @Valid CompanySignUpDto companySignUpDto) {
@@ -45,8 +47,11 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public void createCategory(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto) {
-        //TODO Daniel will do stuff soon here
+    @RequestMapping(value = "/category", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto) {
+        accountService.createCategory(categorySignUpDto);
     }
 
     @ExceptionHandler
