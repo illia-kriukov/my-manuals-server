@@ -4,9 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
+import se.lnu.agile.mymanuals.dto.ProductDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeSignUpDto;
 
+import javax.print.attribute.standard.Media;
 import javax.validation.Valid;
 
 /**
@@ -24,5 +26,9 @@ public interface AccountController {
     @RequestMapping(value = "/representative", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     void createRepresentative(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto);
+
+    @RequestMapping(value="/product", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value= HttpStatus.CREATED)
+    void createProduct(@RequestBody ProductDto productDto);
 
 }

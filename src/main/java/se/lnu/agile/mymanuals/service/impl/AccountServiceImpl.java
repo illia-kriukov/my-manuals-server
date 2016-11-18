@@ -7,6 +7,7 @@ import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeDto;
 import se.lnu.agile.mymanuals.dao.CompanyDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
+import se.lnu.agile.mymanuals.dto.ProductDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeSignUpDto;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
@@ -54,6 +55,13 @@ public class AccountServiceImpl implements AccountService {
             representativeConverter.apply(representativeDao.save(representative));
         }
     }
+
+    //empty method. When possible I will add .save() from Dao object
+    @Override
+    public void createProduct(ProductDto productDto) {
+
+    }
+
 
     /**
      * Perform validation of the companies's data at Sign-Up.

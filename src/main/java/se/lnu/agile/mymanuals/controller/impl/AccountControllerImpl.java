@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import se.lnu.agile.mymanuals.controller.AccountController;
 import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
+import se.lnu.agile.mymanuals.dto.ProductDto;
 import se.lnu.agile.mymanuals.dto.RepresentativeDto;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.dto.RepresentativeSignUpDto;
@@ -42,6 +43,13 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createRepresentative(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto) {
         accountService.createRepresentative(representativeSignUpDto);
+    }
+
+    @Override
+    @RequestMapping(value="/product", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value= HttpStatus.CREATED)
+    public void createProduct(@RequestBody ProductDto productDto) {
+        accountService.createProduct(productDto);
     }
 
     @ExceptionHandler
