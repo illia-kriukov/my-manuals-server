@@ -5,17 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import se.lnu.agile.mymanuals.controller.AccountController;
-import se.lnu.agile.mymanuals.dto.CategorySignUpDto;
-import se.lnu.agile.mymanuals.dto.CompanySignUpDto;
-import se.lnu.agile.mymanuals.dto.RepresentativeDto;
+import se.lnu.agile.mymanuals.dto.*;
 import org.springframework.web.bind.annotation.*;
-import se.lnu.agile.mymanuals.dto.RepresentativeSignUpDto;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.service.AccountService;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -52,6 +50,12 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto) {
         accountService.createCategory(categorySignUpDto);
+    }
+
+    @Override
+    @RequestMapping(value = "/category", method = RequestMethod.GET)
+    public List<CategoryDto> listCategories() {
+        return accountService.listCategories();
     }
 
     @ExceptionHandler

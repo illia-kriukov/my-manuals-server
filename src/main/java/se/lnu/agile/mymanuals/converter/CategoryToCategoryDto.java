@@ -8,6 +8,7 @@ import se.lnu.agile.mymanuals.model.Category;
 
 /**
  * Created by Daniel on 17.11.2016.
+ * A converter from Category to CategoryDto
  */
 @Component
 public class CategoryToCategoryDto implements Function<Category, CategoryDto> {
