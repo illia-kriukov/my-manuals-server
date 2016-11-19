@@ -29,7 +29,7 @@ public interface AccountController {
     @ResponseStatus(value = HttpStatus.CREATED)
     void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto);
 
-    @RequestMapping(value = "/category", method = RequestMethod.GET)
+    @RequestMapping(value = "/categories", method = RequestMethod.GET)
     List<CategoryDto> listCategories();
 
 }

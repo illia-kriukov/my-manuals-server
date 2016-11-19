@@ -3,7 +3,6 @@ package se.lnu.agile.mymanuals.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
-import se.lnu.agile.mymanuals.converter.CategoryToCategoryDto;
 import se.lnu.agile.mymanuals.converter.CompanyToCompanyDto;
 import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
@@ -40,16 +39,13 @@ public class AccountServiceImpl implements AccountService {
     private RepresentativeToRepresentativeDto representativeConverter;
 
     @Autowired
-    private CategoryToCategoryDto categoryConverter;
-
-    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Override
     public void createCompany(CompanySignUpDto dto) {
         if (validateCompanySignUp(dto.getEmail())) {
             Company company = new Company(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getDescription());
-            companyConverter.apply(companyDao.save(company));
+            companyDao.save(company);
         }
     }
 
@@ -61,12 +57,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void createRepresentative(RepresentativeSignUpDto dto) {
-        if (validateRepresentativeSignUp(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getCompanyEmail(),
-                dto.getCompanyPassword())) {
-            Representative representative =
-                    new Representative(dto.getEmail(), dto.getPassword(), dto.getName(),
-                            companyDao.findByEmail(dto.getCompanyEmail()));
-            representativeConverter.apply(representativeDao.save(representative));
+        if (validateRepresentativeSignUp(dto.getEmail(), dto.getPassword(), dto.getName(),
+                dto.getCompanyEmail(), dto.getCompanyPassword())) {
+            Representative representative = new Representative(dto.getEmail(), dto.getPassword(),
+                    dto.getName(), companyDao.findByEmail(dto.getCompanyEmail()));
+            representativeDao.save(representative);
         }
     }
 
@@ -74,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
     public void createCategory(CategorySignUpDto dto) {
         if (validateCategorySignUp(dto.getName())){
             Category category = new Category(dto.getName());
-            categoryConverter.apply(categoryDao.save(category));
+            categoryDao.save(category);
         }
     }
 
@@ -140,7 +135,7 @@ public class AccountServiceImpl implements AccountService {
      */
     private boolean validateCategorySignUp(String name){
         if (categoryDao.findByName(name) != null) {
-            String msg = "Failed to create category '%s'. A category with such a name already exists.";
+            String msg = "Failed to create category '%s'. A category with such name already exists.";
             throw new RegistrationException(String.format(msg, name));
         }
         return true;

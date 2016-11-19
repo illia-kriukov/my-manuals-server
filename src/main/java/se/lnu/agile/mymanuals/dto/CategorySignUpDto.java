@@ -9,10 +9,9 @@ import javax.validation.constraints.Pattern;
 public class CategorySignUpDto {
 
     @NotNull(message = "Name should not be empty.")
-    @Pattern(regexp = "^[A-Z]([a-zA-Z0-9]|[-])*$",
-            message = "Incorrect company name format.")
+    @Pattern(regexp = "^[A-Z]([a-zA-Z0-9]|[- ])*$",
+            message = "Incorrect category name format.")
     private String name;
-
 
     public String getName() {
         return name;
@@ -21,4 +20,5 @@ public class CategorySignUpDto {
     public void setName(String name) {
         this.name = name;
     }
+
 }

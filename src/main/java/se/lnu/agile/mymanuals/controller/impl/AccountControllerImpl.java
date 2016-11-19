@@ -53,7 +53,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    @RequestMapping(value = "/category", method = RequestMethod.GET)
+    @RequestMapping(value = "/categories", method = RequestMethod.GET)
     public List<CategoryDto> listCategories() {
         return accountService.listCategories();
     }

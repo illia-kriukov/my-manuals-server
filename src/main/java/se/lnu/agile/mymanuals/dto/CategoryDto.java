@@ -9,7 +9,6 @@ public class CategoryDto {
 
     private String name;
 
-
     public Long getId() {
         return id;
     }
@@ -25,4 +24,5 @@ public class CategoryDto {
     public void setName(String name) {
         this.name = name;
     }
+
 }

@@ -22,8 +22,7 @@ public class Category {
         this.name = name;
     }
 
-    public Category(){
-
+    public Category() {
     }
 
     public Long getId() {
@@ -41,4 +40,5 @@ public class Category {
     public void setName(String name) {
         this.name = name;
     }
+
 }

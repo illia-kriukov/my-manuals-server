@@ -11,20 +11,16 @@ import java.util.List;
 
 /**
  * Created by Daniel on 18.11.2016.
- * necessary for listCategories() method
+ * Necessary for listCategories() method.
  */
 @Component
 public class CategoryListToCategoryDtoList implements Function<List<Category>, List<CategoryDto>> {
 
     @Override
     public List<CategoryDto> apply(List<Category> categories) {
-
         List<CategoryDto> categoryDtoList = new LinkedList<>();
 
-        if(categories == null)
-            return categoryDtoList;
-
-        for(Category category : categories){
+        for (Category category : categories) {
             CategoryDto categoryDto = new CategoryDto();
             BeanUtils.copyProperties(category, categoryDto);
             categoryDtoList.add(categoryDto);
@@ -32,4 +28,5 @@ public class CategoryListToCategoryDtoList implements Function<List<Category>, L
 
         return categoryDtoList;
     }
+
 }
