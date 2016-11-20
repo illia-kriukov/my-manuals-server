@@ -19,4 +19,6 @@ public interface AccountService {
 
     List<CategoryDto> listCategories();
 
+    void createProduct(ProductDto dto);
+
 }

@@ -58,6 +58,13 @@ public class AccountControllerImpl implements AccountController {
         return accountService.listCategories();
     }
 
+    @Override
+    @RequestMapping(value="/product", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value= HttpStatus.CREATED)
+    public void createProduct(@RequestBody ProductDto productDto) {
+        accountService.createProduct(productDto);
+    }
+
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(MethodArgumentNotValidException e) {

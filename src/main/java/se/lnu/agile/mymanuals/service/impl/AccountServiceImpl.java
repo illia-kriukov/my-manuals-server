@@ -79,6 +79,13 @@ public class AccountServiceImpl implements AccountService {
         return categoryList != null ? categoryListConverter.apply(categoryList) : null;
     }
 
+    //empty method. When possible I will add .save() from Dao object
+    @Override
+    public void createProduct(ProductDto productDto) {
+
+    }
+
+
     /**
      * Perform validation of the companies's data at Sign-Up.
      *
