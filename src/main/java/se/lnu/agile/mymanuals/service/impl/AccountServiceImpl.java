@@ -65,27 +65,6 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    @Override
-    public void createCategory(CategorySignUpDto dto) {
-        if (validateCategorySignUp(dto.getName())){
-            Category category = new Category(dto.getName());
-            categoryDao.save(category);
-        }
-    }
-
-    @Override
-    public List<CategoryDto> listCategories() {
-        List<Category> categoryList = categoryDao.findAll();
-        return categoryList != null ? categoryListConverter.apply(categoryList) : null;
-    }
-
-    //empty method. When possible I will add .save() from Dao object
-    @Override
-    public void createProduct(ProductDto productDto) {
-
-    }
-
-
     /**
      * Perform validation of the companies's data at Sign-Up.
      *

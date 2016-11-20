@@ -5,13 +5,18 @@ package se.lnu.agile.mymanuals.dto;
  */
 public class ProductDto {
 
+    private Long id;
+
     private String name;
 
-    private String number;
+    private String model;
 
-    public ProductDto(String name, String number) {
-        this.name = name;
-        this.number = number;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -22,12 +27,12 @@ public class ProductDto {
         this.name = name;
     }
 
-    public String getNumber() {
-        return number;
+    public String getModel() {
+        return model;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setModel(String model) {
+        this.model = model;
     }
 
 }

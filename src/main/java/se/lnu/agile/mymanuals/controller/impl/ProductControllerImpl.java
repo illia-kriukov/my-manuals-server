@@ -3,6 +3,7 @@ package se.lnu.agile.mymanuals.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.controller.ProductController;
@@ -13,6 +14,7 @@ import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.service.ProductService;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -41,8 +43,8 @@ public class ProductControllerImpl implements ProductController {
     @Override
     @RequestMapping(value="/product", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value= HttpStatus.CREATED)
-    public void createProduct(@RequestBody ProductDto productDto) {
-        productService.createProduct(productDto);
+    public void createProduct(@RequestBody CreateProductDto createProductDto, @AuthenticationPrincipal Principal principal) {
+        productService.createProduct(createProductDto, principal.getName());
     }
 
     @ExceptionHandler

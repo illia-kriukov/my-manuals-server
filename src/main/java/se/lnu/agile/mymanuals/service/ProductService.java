@@ -1,6 +1,7 @@
 package se.lnu.agile.mymanuals.service;
 
 import se.lnu.agile.mymanuals.dto.*;
+import se.lnu.agile.mymanuals.model.Product;
 
 import java.util.List;
 
@@ -13,6 +14,6 @@ public interface ProductService {
 
     List<CategoryDto> listCategories();
 
-    void createProduct(ProductDto dto);
+    void createProduct(CreateProductDto dto, String representativeEmail);
 
 }

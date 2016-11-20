@@ -14,4 +14,6 @@ public interface CategoryDao extends CrudRepository<Category, Long> {
 
     List<Category> findAll();
 
+    List<Category> findAll(Iterable<Long> ids);
+
 }

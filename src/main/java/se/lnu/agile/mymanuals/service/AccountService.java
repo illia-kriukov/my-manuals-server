@@ -15,10 +15,4 @@ public interface AccountService {
 
     void createRepresentative(RepresentativeSignUpDto dto);
 
-    void createCategory(CategorySignUpDto dto);
-
-    List<CategoryDto> listCategories();
-
-    void createProduct(ProductDto dto);
-
 }
