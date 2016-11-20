@@ -13,7 +13,6 @@ import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -42,27 +41,6 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createRepresentative(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto) {
         accountService.createRepresentative(representativeSignUpDto);
-    }
-
-    @Override
-    @RequestMapping(value = "/category", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto) {
-        accountService.createCategory(categorySignUpDto);
-    }
-
-    @Override
-    @RequestMapping(value = "/categories", method = RequestMethod.GET)
-    public List<CategoryDto> listCategories() {
-        return accountService.listCategories();
-    }
-
-    @Override
-    @RequestMapping(value="/product", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value= HttpStatus.CREATED)
-    public void createProduct(@RequestBody ProductDto productDto) {
-        accountService.createProduct(productDto);
     }
 
     @ExceptionHandler

@@ -6,6 +6,7 @@ package se.lnu.agile.mymanuals.dto;
 public class ProductDto {
 
     private String name;
+
     private String number;
 
     public ProductDto(String name, String number) {
@@ -21,8 +22,6 @@ public class ProductDto {
         this.name = name;
     }
 
-
-
     public String getNumber() {
         return number;
     }
@@ -30,4 +29,5 @@ public class ProductDto {
     public void setNumber(String number) {
         this.number = number;
     }
+
 }
