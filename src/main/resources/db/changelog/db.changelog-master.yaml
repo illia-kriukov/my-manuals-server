@@ -233,3 +233,47 @@ databaseChangeLog:
               onUpdate: RESTRICT
               referencedColumnNames: id
               referencedTableName: product
+  - changeSet:
+        id: 12
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: manual
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: product_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_m_product_id
+                      reference: product(id)
+                - column:
+                    name: name
+                    type: varchar(100)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: file
+                    type: longblob
+                    constraints:
+                      nullable: false
+  - changeSet:
+        id: 13
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: manual
+              constraintName: fk_m_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product

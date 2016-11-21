@@ -10,22 +10,23 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 /**
  * Created by ilyakruikov on 11/11/16.
  */
+@RequestMapping(produces = APPLICATION_JSON_VALUE)
 public interface ProductController {
 
-    @RequestMapping(value = "/category", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/category", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto);
 
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
     List<CategoryDto> listCategories();
 
-    @RequestMapping(value="/product", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
-    void createProduct(@RequestBody CreateProductDto createProductDto, @AuthenticationPrincipal Principal principal);
+    void createProduct(@Valid CreateProductDto createProductDto, @AuthenticationPrincipal Principal principal);
 
 }

@@ -2,20 +2,19 @@ package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
 import se.lnu.agile.mymanuals.dao.ProductDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.*;
+import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
-import se.lnu.agile.mymanuals.model.Category;
-import se.lnu.agile.mymanuals.model.Company;
-import se.lnu.agile.mymanuals.model.Product;
-import se.lnu.agile.mymanuals.model.Video;
+import se.lnu.agile.mymanuals.model.*;
 import se.lnu.agile.mymanuals.service.ProductService;
 
+import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -53,16 +52,33 @@ public class ProductServiceImpl implements ProductService {
     public void createProduct(CreateProductDto dto, String representativeEmail) {
         Company company = representativeDao.findByEmail(representativeEmail).getCompany();
         if (validateProduct(dto, company.getId())) {
+            List<Manual> manuals = new ArrayList<>();
             List<Video> videos = new ArrayList<>();
-            Product product = new Product(dto.getName(), dto.getModel(), categoryDao.findAll(dto.getCategory()), company, videos);
-
-            for (String link : dto.getVideo()) {
-                Video video = new Video(link);
-                video.setProduct(product);
-                videos.add(video);
-            }
-
+            Product product = new Product(dto.getName(), dto.getModel(), categoryDao.findAll(dto.getCategory()), company, manuals, videos);
+            addManuals(dto.getFile(), product, manuals);
+            addVideos(dto.getVideo(), product, videos);
             productDao.save(product);
+        }
+    }
+
+    private void addManuals(List<MultipartFile> files, Product product, List<Manual> manuals) {
+        try {
+            for (MultipartFile file : files) {
+                Manual manual = new Manual(file.getOriginalFilename(), file.getBytes());
+                manual.setProduct(product);
+                manuals.add(manual);
+            }
+        } catch(IOException e) {
+            String msg = "Failed to process manual file.";
+            throw new ProductException(msg);
+        }
+    }
+
+    private void addVideos(List<String> links, Product product, List<Video> videos) {
+        for (String link : links) {
+            Video video = new Video(link);
+            video.setProduct(product);
+            videos.add(video);
         }
     }
 

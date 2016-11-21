@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.controller.ProductController;
 import se.lnu.agile.mymanuals.dto.*;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
+import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.service.ProductService;
 
@@ -17,9 +19,12 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 /**
  * Created by ilyakruikov on 11/10/16.
  */
+@RequestMapping(produces = APPLICATION_JSON_VALUE)
 @RestController
 public class ProductControllerImpl implements ProductController {
 
@@ -27,8 +32,7 @@ public class ProductControllerImpl implements ProductController {
     private ProductService productService;
 
     @Override
-    @RequestMapping(value = "/category", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/category", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto) {
         productService.createCategory(categorySignUpDto);
@@ -41,9 +45,9 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    @RequestMapping(value="/product", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
-    public void createProduct(@RequestBody CreateProductDto createProductDto, @AuthenticationPrincipal Principal principal) {
+    public void createProduct(@Valid CreateProductDto createProductDto, @AuthenticationPrincipal Principal principal) {
         productService.createProduct(createProductDto, principal.getName());
     }
 
@@ -55,7 +59,19 @@ public class ProductControllerImpl implements ProductController {
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ValidationError handleException(BindException e) {
+        return ValidationErrorBuilder.fromBindingErrors(e.getBindingResult());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(RegistrationException e) {
+        return ValidationErrorBuilder.fromException(e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ValidationError handleException(ProductException e) {
         return ValidationErrorBuilder.fromException(e);
     }
 

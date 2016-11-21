@@ -1,5 +1,8 @@
 package se.lnu.agile.mymanuals.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -7,6 +10,7 @@ import java.util.List;
  */
 public class CreateProductDto {
 
+    @NotNull(message = "Email should not be empty.")
     private String name;
 
     private String model;
@@ -14,6 +18,8 @@ public class CreateProductDto {
     private List<Long> category;
 
     private List<String> video;
+
+    private List<MultipartFile> file;
 
     public String getName() {
         return name;
@@ -45,6 +51,14 @@ public class CreateProductDto {
 
     public void setVideo(List<String> video) {
         this.video = video;
+    }
+
+    public List<MultipartFile> getFile() {
+        return file;
+    }
+
+    public void setFile(List<MultipartFile> file) {
+        this.file = file;
     }
 
 }

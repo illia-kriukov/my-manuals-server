@@ -14,9 +14,12 @@ import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 /**
  * Created by ilyakruikov on 11/10/16.
  */
+@RequestMapping(produces = APPLICATION_JSON_VALUE)
 @RestController
 public class AccountControllerImpl implements AccountController {
 
@@ -24,7 +27,7 @@ public class AccountControllerImpl implements AccountController {
     private AccountService accountService;
 
     @Override
-    @RequestMapping(value = "/company", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/company", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createCompany(@RequestBody @Valid CompanySignUpDto companySignUpDto) {
         accountService.createCompany(companySignUpDto);
@@ -37,7 +40,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    @RequestMapping(value = "/representative", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/representative", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public void createRepresentative(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto) {
         accountService.createRepresentative(representativeSignUpDto);
