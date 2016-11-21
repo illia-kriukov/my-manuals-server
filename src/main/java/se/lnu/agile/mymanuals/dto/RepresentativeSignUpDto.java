@@ -20,7 +20,7 @@ public class RepresentativeSignUpDto {
 
     @NotNull(message = "Name should not be empty.")
     @Pattern(regexp = "^[a-zA-Z- ]*$",
-            message = "Name can contains only letters and '-'.")
+            message = "Name can contain only letters and '-'.")
     private String name;
 
     @NotNull(message = "Company email should not be empty.")

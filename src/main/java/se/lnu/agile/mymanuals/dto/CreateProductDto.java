@@ -3,6 +3,7 @@ package se.lnu.agile.mymanuals.dto;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -10,9 +11,12 @@ import java.util.List;
  */
 public class CreateProductDto {
 
-    @NotNull(message = "Email should not be empty.")
+    @NotNull(message="Name should not be empty")
+    @Pattern(regexp = "^[\\d \\w \\s]+$")
     private String name;
 
+    @NotNull(message="Model should not be empty")
+    @Pattern(regexp = "^[\\d \\w \\s]+$")
     private String model;
 
     private List<Long> category;

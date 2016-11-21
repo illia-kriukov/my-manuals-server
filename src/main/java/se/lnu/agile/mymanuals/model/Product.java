@@ -23,6 +23,7 @@ public class Product {
     private List<Category> category;
 
     @ManyToOne
+    @JoinColumn(name="company.id")
     private Company company;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
@@ -90,5 +91,7 @@ public class Product {
     public void setVideo(List<Video> video) {
         this.video = video;
     }
+
+
 
 }
