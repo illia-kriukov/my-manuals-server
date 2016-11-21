@@ -101,3 +101,67 @@ databaseChangeLog:
                     type: varchar(50)
                     constraints:
                       nullable: false
+  - changeSet:
+        id: 5
+        author: daniel.paque
+        changes:
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Laundry
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Dishwashers
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Refrigeration
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Cooking
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Floorcare
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Ironing
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Microwaves
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Printers
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Cameras
+          - insert:
+              tableName: category
+              columns:
+                - column:
+                    name: name
+                    value: Speakers
