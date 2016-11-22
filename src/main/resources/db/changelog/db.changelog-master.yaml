@@ -101,3 +101,179 @@ databaseChangeLog:
                     type: varchar(50)
                     constraints:
                       nullable: false
+  - changeSet:
+        id: 5
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: product
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: name
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: model
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: company_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_p_company_id
+                      reference: company(id)
+  - changeSet:
+        id: 6
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: company_id
+              baseTableName: product
+              constraintName: fk_p_company_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: company
+  - changeSet:
+        id: 7
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: product_category
+              columns:
+                - column:
+                    name: product_id
+                    type: int
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_pc_product_id
+                      reference: product(id)
+                - column:
+                    name: category_id
+                    type: int
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_pc_category_id
+                      reference: category(id)
+  - changeSet:
+        id: 8
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: product_category
+              constraintName: fk_pc_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product
+  - changeSet:
+        id: 9
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: category_id
+              baseTableName: product_category
+              constraintName: fk_pc_category_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: category
+  - changeSet:
+        id: 10
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: video
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: product_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_v_product_id
+                      reference: product(id)
+                - column:
+                    name: link
+                    type: varchar(300)
+                    constraints:
+                      nullable: false
+  - changeSet:
+        id: 11
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: video
+              constraintName: fk_v_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product
+  - changeSet:
+        id: 12
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: manual
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: product_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_m_product_id
+                      reference: product(id)
+                - column:
+                    name: name
+                    type: varchar(100)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: file
+                    type: longblob
+                    constraints:
+                      nullable: false
+  - changeSet:
+        id: 13
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: manual
+              constraintName: fk_m_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product

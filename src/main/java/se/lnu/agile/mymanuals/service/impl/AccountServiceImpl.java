@@ -10,12 +10,9 @@ import se.lnu.agile.mymanuals.dao.CompanyDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.*;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
-import se.lnu.agile.mymanuals.model.Category;
 import se.lnu.agile.mymanuals.model.Company;
 import se.lnu.agile.mymanuals.model.Representative;
 import se.lnu.agile.mymanuals.service.AccountService;
-
-import java.util.List;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -42,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Override
-    public void createCompany(CompanySignUpDto dto) {
+    public void createCompany(CompanyCreateDto dto) {
         if (validateCompanySignUp(dto.getEmail())) {
             Company company = new Company(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getDescription());
             companyDao.save(company);
@@ -63,20 +60,6 @@ public class AccountServiceImpl implements AccountService {
                     dto.getName(), companyDao.findByEmail(dto.getCompanyEmail()));
             representativeDao.save(representative);
         }
-    }
-
-    @Override
-    public void createCategory(CategorySignUpDto dto) {
-        if (validateCategorySignUp(dto.getName())){
-            Category category = new Category(dto.getName());
-            categoryDao.save(category);
-        }
-    }
-
-    @Override
-    public List<CategoryDto> listCategories() {
-        List<Category> categoryList = categoryDao.findAll();
-        return categoryList != null ? categoryListConverter.apply(categoryList) : null;
     }
 
     /**

@@ -14,13 +14,11 @@ public class RepresentativeSignUpDto {
     private String email;
 
     @NotNull(message = "Password should not be empty.")
-    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$",
-            message = "Password should be at least 6 symbols.")
+    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$", message = "Password should be at least 6 symbols.")
     private String password;
 
     @NotNull(message = "Name should not be empty.")
-    @Pattern(regexp = "^[a-zA-Z- ]*$",
-            message = "Name can contains only letters and '-'.")
+    @Pattern(regexp = "^[a-zA-Z- ]*$", message = "Name can contain only letters and '-'.")
     private String name;
 
     @NotNull(message = "Company email should not be empty.")
