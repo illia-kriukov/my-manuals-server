@@ -11,6 +11,10 @@ import se.lnu.agile.mymanuals.model.Product;
  */
 public interface ProductDao extends CrudRepository<Product, Long> {
 
-    @Query("select p.model from Product p join p.company where (p.company.id) = (:companyId) and (p.model) = (:model)")
-    String getModelByCompany(@Param("model") String model, @Param("companyId") long companyId);
+    @Query("SELECT p.model " +
+            "FROM Product p JOIN p.company " +
+            "WHERE p.company.id = :companyId " +
+            "AND p.model = :model")
+    String getModelByCompanyId(@Param("companyId") long companyId, @Param("model") String model);
+
 }

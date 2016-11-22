@@ -29,8 +29,8 @@ public class AccountControllerImpl implements AccountController {
     @Override
     @RequestMapping(value = "/company", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public void createCompany(@RequestBody @Valid CompanySignUpDto companySignUpDto) {
-        accountService.createCompany(companySignUpDto);
+    public void createCompany(@RequestBody @Valid CompanyCreateDto companyCreateDto) {
+        accountService.createCompany(companyCreateDto);
     }
 
     @Override

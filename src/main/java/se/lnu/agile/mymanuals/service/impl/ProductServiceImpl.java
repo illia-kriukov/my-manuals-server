@@ -9,7 +9,6 @@ import se.lnu.agile.mymanuals.dao.ProductDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.*;
 import se.lnu.agile.mymanuals.exception.ProductException;
-import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.model.*;
 import se.lnu.agile.mymanuals.service.ProductService;
 
@@ -35,8 +34,8 @@ public class ProductServiceImpl implements ProductService {
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Override
-    public void createCategory(CategorySignUpDto dto) {
-        if (validateCategorySignUp(dto.getName())){
+    public void createCategory(CategoryCreateDto dto) {
+        if (validateCategory(dto.getName())){
             Category category = new Category(dto.getName());
             categoryDao.save(category);
         }
@@ -49,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void createProduct(CreateProductDto dto, String representativeEmail) {
+    public void createProduct(ProductCreateDto dto, String representativeEmail) {
         Company company = representativeDao.findByEmail(representativeEmail).getCompany();
         if (validateProduct(dto, company.getId())) {
             List<Manual> manuals = new ArrayList<>();
@@ -75,51 +74,63 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void addVideos(List<String> links, Product product, List<Video> videos) {
-        for (String link : links) {
-            Video video = new Video(link);
-            video.setProduct(product);
-            videos.add(video);
+        if (links != null) {
+            for (String link : links) {
+                Video video = new Video(link);
+                video.setProduct(product);
+                videos.add(video);
+            }
         }
     }
 
     /**
-     * Perform validation of the category's data at Sign-Up.
+     * Perform validation of the category's data at creation.
      *
      * Checks:
      * -> Category name doesn't exists in category table
      */
-    private boolean validateCategorySignUp(String name) {
+    private boolean validateCategory(String name) {
         if (categoryDao.findByName(name) != null) {
             String msg = "Failed to create category '%s'. A category with such name already exists.";
-            throw new RegistrationException(String.format(msg, name));
+            throw new ProductException(String.format(msg, name));
         }
         return true;
     }
 
-    /**Perform validation of products data at Sign-up
+    /**
+     * Perform validation of product's data at creation.
      *
-     *Checks:
-     * -> video links are not over 300 characters long
-     * ->Number of categories must not be over 3
-     * ->A company cannot have two products with the same model name
+     * Checks:
+     * -> A company cannot have two products with the same model
+     * -> Number of categories must not be over 3
+     * -> Video links are not over 300 characters long
      */
-    private boolean validateProduct(CreateProductDto dto, Long companyId) {
-        List<String> videoList = dto.getVideo();
+    private boolean validateProduct(ProductCreateDto dto, Long companyId) {
+        if (productDao.getModelByCompanyId(companyId, dto.getModel()) != null) {
+            throw new ProductException("Company already has product with such model");
+        }
+
         List<Long> categoryList = dto.getCategory();
-        for (String link : videoList) {
-            if (link.length() > 300) {
-                String msg = "Failed to add product. Video link no" + videoList.indexOf(link) + " should be under 300 characters long";
-                throw new RegistrationException(msg);
+
+        if (categoryList.size() > 3) {
+            throw new ProductException("Product can not be more than in 3 categories");
+        }
+
+        if (categoryDao.findAll(categoryList).size() != categoryList.size()) {
+            throw new ProductException("One of the selected categories does not exist");
+        }
+
+        List<String> videoList = dto.getVideo();
+
+        if (videoList != null) {
+            for (String link : videoList) {
+                if (link.length() > 300) {
+                    String msg = "Failed to add product. Video link no" + videoList.indexOf(link) + " should be under 300 characters long";
+                    throw new ProductException(msg);
+                }
             }
         }
-        if (categoryList.size() > 3) throw new RegistrationException("Product cannot have more than 3 categories");
-        for (Long id : categoryList) {
-            if (categoryDao.findOne(id) == null) throw new RegistrationException("Category does not exist");// how to access name
-            if (productDao.getModelByCompany(dto.getModel(), companyId) != null) {
-                String msg = "This model already exists in the Database";
-                throw new RegistrationException(msg);
-            }
-        }
+
         return true;
     }
 

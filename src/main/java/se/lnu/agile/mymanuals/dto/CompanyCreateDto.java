@@ -6,7 +6,7 @@ import javax.validation.constraints.Pattern;
 /**
  * Created by ilyakruikov on 11/15/16.
  */
-public class CompanySignUpDto {
+public class CompanyCreateDto {
 
     @NotNull(message = "Email should not be empty.")
     @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",
@@ -14,13 +14,11 @@ public class CompanySignUpDto {
     private String email;
 
     @NotNull(message = "Password should not be empty.")
-    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$",
-            message = "Password should be at least 6 symbols.")
+    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$", message = "Password should be at least 6 symbols.")
     private String password;
 
     @NotNull(message = "Name should not be empty.")
-    @Pattern(regexp = "^[A-Z]([a-zA-Z0-9]|[- @\\.#&!])*$",
-            message = "Incorrect company name format.")
+    @Pattern(regexp = "^[A-Z]([a-zA-Z0-9]|[- @\\.#&!])*$", message = "Incorrect company name format.")
     private String name;
 
     private String description;

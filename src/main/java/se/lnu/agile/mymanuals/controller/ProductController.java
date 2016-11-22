@@ -20,13 +20,13 @@ public interface ProductController {
 
     @RequestMapping(value = "/category", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto);
+    void createCategory(@RequestBody @Valid CategoryCreateDto categoryCreateDto);
 
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
     List<CategoryDto> listCategories();
 
     @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
-    void createProduct(@Valid CreateProductDto createProductDto, @AuthenticationPrincipal Principal principal);
+    void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal);
 
 }

@@ -1,5 +1,7 @@
 package se.lnu.agile.mymanuals.dto;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
@@ -9,20 +11,22 @@ import java.util.List;
 /**
  * Created by ilyakruikov on 11/20/16.
  */
-public class CreateProductDto {
+public class ProductCreateDto {
 
-    @NotNull(message="Name should not be empty")
-    @Pattern(regexp = "^[\\d \\w \\s]+$")
+    @NotBlank(message="Name should not be empty")
+    @Pattern(regexp = "^[A-Z]([a-zA-Z0-9]|[- @\\.#&!])*$", message = "Incorrect product name format.")
     private String name;
 
-    @NotNull(message="Model should not be empty")
-    @Pattern(regexp = "^[\\d \\w \\s]+$")
+    @NotBlank(message="Model should not be empty")
+    @Pattern(regexp = "^[A-Z]([a-zA-Z0-9]|[- @\\.#&!])*$", message = "Incorrect product model format.")
     private String model;
 
+    @NotEmpty(message="Product should be at least in one category")
     private List<Long> category;
 
     private List<String> video;
 
+    @NotEmpty(message="At least one manual should be uploaded")
     private List<MultipartFile> file;
 
     public String getName() {

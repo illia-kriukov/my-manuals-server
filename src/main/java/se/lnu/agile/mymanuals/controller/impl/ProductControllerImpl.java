@@ -34,8 +34,8 @@ public class ProductControllerImpl implements ProductController {
     @Override
     @RequestMapping(value = "/category", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public void createCategory(@RequestBody @Valid CategorySignUpDto categorySignUpDto) {
-        productService.createCategory(categorySignUpDto);
+    public void createCategory(@RequestBody @Valid CategoryCreateDto categoryCreateDto) {
+        productService.createCategory(categoryCreateDto);
     }
 
     @Override
@@ -47,8 +47,8 @@ public class ProductControllerImpl implements ProductController {
     @Override
     @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
-    public void createProduct(@Valid CreateProductDto createProductDto, @AuthenticationPrincipal Principal principal) {
-        productService.createProduct(createProductDto, principal.getName());
+    public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
+        productService.createProduct(productCreateDto, principal.getName());
     }
 
     @ExceptionHandler
