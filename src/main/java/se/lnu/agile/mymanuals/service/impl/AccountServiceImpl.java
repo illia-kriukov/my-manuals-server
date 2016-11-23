@@ -41,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
-    private ConsumerDao ConsumerDao;
+    private ConsumerDao consumerDao;
 
     @Override
     public void createCompany(CompanyCreateDto dto) {
@@ -130,9 +130,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void createConsumer(ConsumerDto dto) {
-        Consumer consumer = new Consumer(dto.getEmail(), dto.getPassword(),dto.getName());
-        ConsumerDao.save(consumer);
+    public void createConsumer(ConsumerSignUpDto dto) {
+        if(validateConsumerSignUp(dto.getEmail())){
+            Consumer consumer = new Consumer(dto.getEmail(), dto.getPassword(),dto.getName());
+            consumerDao.save(consumer);
+        }
+
     }
 
+    private boolean validateConsumerSignUp(String name){
+        if (consumerDao.findByEmail(name) != null ) {
+            String msg = "Failed to create consumer '%s'. A consumer with such email already exists.";
+            throw new RegistrationException(String.format(msg, name));
+        }
+        if (representativeDao.findByEmail(name) != null) {
+            String msg = "Failed to create consumer '%s'. A representative with such email already exists.";
+            throw new RegistrationException(String.format(msg, name));
+        }
+        return true;
+    }
 }

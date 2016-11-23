@@ -28,6 +28,6 @@ public interface AccountController {
 
     @RequestMapping(value = "/consumer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    void createConsumer(@RequestBody @Valid ConsumerDto consumerDto);
+    void createConsumer(@RequestBody @Valid ConsumerSignUpDto consumerSignUpDto);
 
 }

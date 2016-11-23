@@ -61,8 +61,8 @@ public class AccountControllerImpl implements AccountController {
     @Override
     @RequestMapping(value = "/consumer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public void createConsumer(@RequestBody @Valid ConsumerDto consumerDto) {
-        accountService.createConsumer(consumerDto);
+    public void createConsumer(@RequestBody @Valid ConsumerSignUpDto consumerSignUpDto) {
+        accountService.createConsumer(consumerSignUpDto);
     }
 
 }

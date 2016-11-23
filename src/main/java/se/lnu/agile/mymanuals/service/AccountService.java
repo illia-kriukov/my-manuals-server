@@ -13,6 +13,6 @@ public interface AccountService {
 
     void createRepresentative(RepresentativeSignUpDto dto);
 
-    void createConsumer (ConsumerDto dto);
+    void createConsumer (ConsumerSignUpDto dto);
 
 }
