@@ -16,6 +16,7 @@ import se.lnu.agile.mymanuals.service.ProductService;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -36,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
-    ProductToProductListDto productListConverter;
+    private ProductToProductListDto productListConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -50,24 +51,6 @@ public class ProductServiceImpl implements ProductService {
     public List<CategoryDto> listCategories() {
         List<Category> categoryList = categoryDao.findAll();
         return categoryList != null ? categoryListConverter.apply(categoryList) : null;
-
-
-    }
-
-    @Override
-    public List<ProductListDto> getAllProducts(Integer page, Integer count) {
-        Iterable<Product> productList;
-        if (page != null&&count !=null) productList = productDao.findAll(new PageRequest(page, count)).getContent();
-        else if (page==null && count==null) productList=productDao.findAll();
-        else
-        { if (page==null) throw new ProductException("Page is null");
-        else throw new ProductException("Count is null"); }
-        List<ProductListDto> productListDtos =new ArrayList<>();
-        for (Product p :
-                productList) {
-            productListDtos.add(productListConverter.apply(p));
-        }
-        return productListDtos;
     }
 
     @Override
@@ -104,6 +87,20 @@ public class ProductServiceImpl implements ProductService {
                 videos.add(video);
             }
         }
+    }
+
+    @Override
+    public List<ProductListDto> listProducts(Integer page, Integer count) {
+        List<Product> productList;
+
+        if (page != null && count != null) {
+            productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        } else {
+            productList = productDao.findAll();
+        }
+
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
 
     /**

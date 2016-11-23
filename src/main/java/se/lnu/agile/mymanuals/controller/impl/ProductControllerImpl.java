@@ -44,12 +44,12 @@ public class ProductControllerImpl implements ProductController {
         return productService.listCategories();
     }
 
+    @Override
     @RequestMapping(value="/products", method= RequestMethod.GET)
-    public List<ProductListDto> getAllProducts(@RequestParam(value = "page", required = false) Integer page,
-                                               @RequestParam(value = "count", required = false) Integer count) {
-        return productService.getAllProducts(page, count);
+    public List<ProductListDto> listProducts(@RequestParam(value = "page", required = false) Integer page,
+                                             @RequestParam(value = "count", required = false) Integer count) {
+        return productService.listProducts(page, count);
     }
-
 
     @Override
     @RequestMapping(value="/product", method=RequestMethod.POST)

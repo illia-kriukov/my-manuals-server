@@ -1,7 +1,5 @@
 package se.lnu.agile.mymanuals.dto;
 
-import se.lnu.agile.mymanuals.model.Company;
-
 import java.util.List;
 
 /**
@@ -9,14 +7,23 @@ import java.util.List;
  */
 public class ProductListDto {
 
+    private Long id;
+
     private String name;
 
-    private String Model;
+    private String model;
 
     private List<CategoryDto> categories;
 
-    private String companyName;
+    private CompanyDto company;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -27,11 +34,11 @@ public class ProductListDto {
     }
 
     public String getModel() {
-        return Model;
+        return model;
     }
 
     public void setModel(String model) {
-        Model = model;
+        this.model = model;
     }
 
     public List<CategoryDto> getCategories() {
@@ -42,11 +49,12 @@ public class ProductListDto {
         this.categories = categories;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public CompanyDto getCompany() {
+        return company;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setCompany(CompanyDto company) {
+        this.company = company;
     }
+
 }
