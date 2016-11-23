@@ -25,6 +25,10 @@ public interface ProductController {
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
     List<CategoryDto> listCategories();
 
+    @RequestMapping(value="/products", method= RequestMethod.GET)
+    List<ProductListDto> getAllProducts(@RequestParam("page") Integer page, @RequestParam("count") Integer count);
+
+
     @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
     void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal);

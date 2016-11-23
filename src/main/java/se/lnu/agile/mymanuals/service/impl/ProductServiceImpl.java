@@ -1,9 +1,11 @@
 package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
+import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
 import se.lnu.agile.mymanuals.dao.ProductDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
@@ -33,6 +35,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
+    @Autowired
+    ProductToProductListDto productListConverter;
+
     @Override
     public void createCategory(CategoryCreateDto dto) {
         if (validateCategory(dto.getName())){
@@ -45,6 +50,24 @@ public class ProductServiceImpl implements ProductService {
     public List<CategoryDto> listCategories() {
         List<Category> categoryList = categoryDao.findAll();
         return categoryList != null ? categoryListConverter.apply(categoryList) : null;
+
+
+    }
+
+    @Override
+    public List<ProductListDto> getAllProducts(Integer page, Integer count) {
+        Iterable<Product> productList;
+        if (page != null&&count !=null) productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        else if (page==null && count==null) productList=productDao.findAll();
+        else
+        { if (page==null) throw new ProductException("Page is null");
+        else throw new ProductException("Count is null"); }
+        List<ProductListDto> productListDtos =new ArrayList<>();
+        for (Product p :
+                productList) {
+            productListDtos.add(productListConverter.apply(p));
+        }
+        return productListDtos;
     }
 
     @Override
