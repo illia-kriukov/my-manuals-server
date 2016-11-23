@@ -277,3 +277,32 @@ databaseChangeLog:
               onUpdate: RESTRICT
               referencedColumnNames: id
               referencedTableName: product
+  - changeSet:
+        id: 14
+        author: kazilas.panagiotis
+        changes:
+           - createTable:
+               tableName: consumer
+               columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: email
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: password
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+                - column:
+                    name: name
+                    type: varchar(50)
+                    constraints:
+                      nullable: false

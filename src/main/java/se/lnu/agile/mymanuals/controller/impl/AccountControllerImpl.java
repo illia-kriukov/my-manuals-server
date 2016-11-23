@@ -58,4 +58,11 @@ public class AccountControllerImpl implements AccountController {
         return ValidationErrorBuilder.fromException(e);
     }
 
+    @Override
+    @RequestMapping(value = "/consumer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void createConsumer(@RequestBody @Valid ConsumerDto consumerDto) {
+        accountService.createConsumer(consumerDto);
+    }
+
 }

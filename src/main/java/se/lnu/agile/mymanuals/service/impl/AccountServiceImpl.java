@@ -8,10 +8,12 @@ import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
 import se.lnu.agile.mymanuals.dao.CompanyDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
+import se.lnu.agile.mymanuals.dao.ConsumerDao;
 import se.lnu.agile.mymanuals.dto.*;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.model.Company;
 import se.lnu.agile.mymanuals.model.Representative;
+import se.lnu.agile.mymanuals.model.Consumer;
 import se.lnu.agile.mymanuals.service.AccountService;
 
 /**
@@ -37,6 +39,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
+
+    @Autowired
+    private ConsumerDao ConsumerDao;
 
     @Override
     public void createCompany(CompanyCreateDto dto) {
@@ -122,6 +127,12 @@ public class AccountServiceImpl implements AccountService {
             throw new RegistrationException(String.format(msg, name));
         }
         return true;
+    }
+
+    @Override
+    public void createConsumer(ConsumerDto dto) {
+        Consumer consumer = new Consumer(dto.getEmail(), dto.getPassword(),dto.getName());
+        ConsumerDao.save(consumer);
     }
 
 }
