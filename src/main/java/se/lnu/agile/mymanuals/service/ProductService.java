@@ -15,4 +15,6 @@ public interface ProductService {
 
     void createProduct(ProductCreateDto dto, String representativeEmail);
 
+    List<ProductListDto> listProducts(Integer page, Integer count);
+
 }

@@ -1,9 +1,11 @@
 package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
+import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
 import se.lnu.agile.mymanuals.dao.ProductDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
@@ -14,6 +16,7 @@ import se.lnu.agile.mymanuals.service.ProductService;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -32,6 +35,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
+
+    @Autowired
+    private ProductToProductListDto productListConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -81,6 +87,20 @@ public class ProductServiceImpl implements ProductService {
                 videos.add(video);
             }
         }
+    }
+
+    @Override
+    public List<ProductListDto> listProducts(Integer page, Integer count) {
+        List<Product> productList;
+
+        if (page != null && count != null) {
+            productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        } else {
+            productList = productDao.findAll();
+        }
+
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
 
     /**

@@ -45,6 +45,13 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
+    @RequestMapping(value="/products", method= RequestMethod.GET)
+    public List<ProductListDto> listProducts(@RequestParam(value = "page", required = false) Integer page,
+                                             @RequestParam(value = "count", required = false) Integer count) {
+        return productService.listProducts(page, count);
+    }
+
+    @Override
     @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
     public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
