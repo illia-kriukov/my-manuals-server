@@ -8,10 +8,12 @@ import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
 import se.lnu.agile.mymanuals.dao.CompanyDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
+import se.lnu.agile.mymanuals.dao.ConsumerDao;
 import se.lnu.agile.mymanuals.dto.*;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.model.Company;
 import se.lnu.agile.mymanuals.model.Representative;
+import se.lnu.agile.mymanuals.model.Consumer;
 import se.lnu.agile.mymanuals.service.AccountService;
 
 /**
@@ -27,16 +29,10 @@ public class AccountServiceImpl implements AccountService {
     private RepresentativeDao representativeDao;
 
     @Autowired
-    private CategoryDao categoryDao;
-
-    @Autowired
-    private CompanyToCompanyDto companyConverter;
+    private ConsumerDao consumerDao;
 
     @Autowired
     private RepresentativeToRepresentativeDto representativeConverter;
-
-    @Autowired
-    private CategoryListToCategoryDtoList categoryListConverter;
 
     @Override
     public void createCompany(CompanyCreateDto dto) {
@@ -59,6 +55,14 @@ public class AccountServiceImpl implements AccountService {
             Representative representative = new Representative(dto.getEmail(), dto.getPassword(),
                     dto.getName(), companyDao.findByEmail(dto.getCompanyEmail()));
             representativeDao.save(representative);
+        }
+    }
+
+    @Override
+    public void createConsumer(ConsumerSignUpDto dto) {
+        if (validateConsumerSignUp(dto.getEmail())) {
+            Consumer consumer = new Consumer(dto.getEmail(), dto.getPassword(),dto.getName());
+            consumerDao.save(consumer);
         }
     }
 
@@ -111,16 +115,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Perform validation of the category's data at Sign-Up.
+     * Perform validation of the consumer's data at Sign-Up.
      *
      * Checks:
-     * -> Category name doesn't exists in category table
+     * -> Consumer email doesn't exists in consumer table
+     * -> Consumer email doesn't exists in representative table
      */
-    private boolean validateCategorySignUp(String name){
-        if (categoryDao.findByName(name) != null) {
-            String msg = "Failed to create category '%s'. A category with such name already exists.";
+    private boolean validateConsumerSignUp(String name){
+        if (consumerDao.findByEmail(name) != null) {
+            String msg = "Failed to create consumer '%s'. A consumer with such email already exists.";
             throw new RegistrationException(String.format(msg, name));
         }
+
+        if (representativeDao.findByEmail(name) != null) {
+            String msg = "Failed to create consumer '%s'. A representative with such email already exists.";
+            throw new RegistrationException(String.format(msg, name));
+        }
+
         return true;
     }
 

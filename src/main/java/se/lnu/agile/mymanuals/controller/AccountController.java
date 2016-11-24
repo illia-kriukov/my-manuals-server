@@ -26,4 +26,8 @@ public interface AccountController {
     @ResponseStatus(value = HttpStatus.CREATED)
     void createRepresentative(@RequestBody @Valid RepresentativeSignUpDto representativeSignUpDto);
 
+    @RequestMapping(value = "/consumer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    void createConsumer(@RequestBody @Valid ConsumerSignUpDto consumerSignUpDto);
+
 }

@@ -46,6 +46,13 @@ public class AccountControllerImpl implements AccountController {
         accountService.createRepresentative(representativeSignUpDto);
     }
 
+    @Override
+    @RequestMapping(value = "/consumer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void createConsumer(@RequestBody @Valid ConsumerSignUpDto consumerSignUpDto) {
+        accountService.createConsumer(consumerSignUpDto);
+    }
+
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(MethodArgumentNotValidException e) {
