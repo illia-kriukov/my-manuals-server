@@ -281,9 +281,9 @@ databaseChangeLog:
         id: 14
         author: kazilas.panagiotis
         changes:
-           - createTable:
-               tableName: consumer
-               columns:
+          - createTable:
+              tableName: consumer
+              columns:
                 - column:
                     name: id
                     type: int

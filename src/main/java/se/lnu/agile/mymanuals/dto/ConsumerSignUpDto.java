@@ -1,6 +1,7 @@
 package se.lnu.agile.mymanuals.dto;
 
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.validation.constraints.Pattern;
 
 /**
@@ -8,16 +9,16 @@ import javax.validation.constraints.Pattern;
  */
 public class ConsumerSignUpDto {
 
-    @NotNull(message = "Email should not be empty.")
+    @NotBlank(message = "Email should not be empty.")
     @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",
             message = "Incorrect email format.")
     private String email;
 
-    @NotNull(message = "Password should not be empty.")
+    @NotBlank(message = "Password should not be empty.")
     @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$", message = "Password should be at least 6 symbols.")
     private String password;
 
-    @NotNull(message = "Name should not be empty.")
+    @NotBlank(message = "Name should not be empty.")
     @Pattern(regexp = "^[a-zA-Z- ]*$", message = "Name can contain only letters and '-'.")
     private String name;
 
@@ -44,4 +45,5 @@ public class ConsumerSignUpDto {
     public void setName(String name) {
         this.name = name;
     }
+
 }

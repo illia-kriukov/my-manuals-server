@@ -5,9 +5,9 @@ import javax.persistence.*;
 /**
  * Created by Lo.Gas_2 on 23/11/2016.
  */
-
 @Entity
 public class Consumer {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -20,7 +20,6 @@ public class Consumer {
 
     @Column(nullable = false)
     private String name;
-
 
     public Consumer(String email, String password, String name) {
         this.email = email;
@@ -70,4 +69,5 @@ public class Consumer {
     public void setName(String name) {
         this.name = name;
     }
+
 }
