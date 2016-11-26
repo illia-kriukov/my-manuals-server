@@ -1,9 +1,9 @@
 package se.lnu.agile.mymanuals.converter;
 
 import org.springframework.stereotype.Component;
-import se.lnu.agile.mymanuals.dto.CategoryDto;
-import se.lnu.agile.mymanuals.dto.CompanyDto;
-import se.lnu.agile.mymanuals.dto.ProductListDto;
+import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.company.CompanyDto;
+import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.model.Product;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.category;
 
 /**
  * Created by Daniel on 16.11.2016.

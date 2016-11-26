@@ -2,14 +2,17 @@ package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
-import se.lnu.agile.mymanuals.converter.CompanyToCompanyDto;
+import se.lnu.agile.mymanuals.converter.ConsumerToConsumerInfoDto;
 import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeDto;
-import se.lnu.agile.mymanuals.dao.CategoryDao;
+import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeInfoDto;
 import se.lnu.agile.mymanuals.dao.CompanyDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dao.ConsumerDao;
-import se.lnu.agile.mymanuals.dto.*;
+import se.lnu.agile.mymanuals.dto.company.CompanyCreateDto;
+import se.lnu.agile.mymanuals.dto.consumer.ConsumerInfoDto;
+import se.lnu.agile.mymanuals.dto.consumer.ConsumerSignUpDto;
+import se.lnu.agile.mymanuals.dto.representative.RepresentativeInfoDto;
+import se.lnu.agile.mymanuals.dto.representative.RepresentativeSignUpDto;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.model.Company;
 import se.lnu.agile.mymanuals.model.Representative;
@@ -32,7 +35,10 @@ public class AccountServiceImpl implements AccountService {
     private ConsumerDao consumerDao;
 
     @Autowired
-    private RepresentativeToRepresentativeDto representativeConverter;
+    private RepresentativeToRepresentativeInfoDto representativeInfoConverter;
+
+    @Autowired
+    private ConsumerToConsumerInfoDto consumerInfoConverter;
 
     @Override
     public void createCompany(CompanyCreateDto dto) {
@@ -40,12 +46,6 @@ public class AccountServiceImpl implements AccountService {
             Company company = new Company(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getDescription());
             companyDao.save(company);
         }
-    }
-
-    @Override
-    public RepresentativeDto getRepresentative(String email) {
-        Representative representative = representativeDao.findByEmail(email);
-        return representative != null ? representativeConverter.apply(representative) : null;
     }
 
     @Override
@@ -59,11 +59,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public RepresentativeInfoDto getRepresentativeInfo(String email) {
+        Representative representative = representativeDao.findByEmail(email);
+        return representative != null ? representativeInfoConverter.apply(representative) : null;
+    }
+
+    @Override
     public void createConsumer(ConsumerSignUpDto dto) {
         if (validateConsumerSignUp(dto.getEmail())) {
             Consumer consumer = new Consumer(dto.getEmail(), dto.getPassword(),dto.getName());
             consumerDao.save(consumer);
         }
+    }
+
+    @Override
+    public ConsumerInfoDto getConsumerInfo(String email) {
+        Consumer consumer = consumerDao.findByEmail(email);
+        return consumer != null ? consumerInfoConverter.apply(consumer) : null;
     }
 
     /**

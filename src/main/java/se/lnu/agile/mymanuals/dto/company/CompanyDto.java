@@ -1,30 +1,24 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.company;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Created by ilyakruikov on 11/11/16.
  */
-public class RepresentativeDto {
+public class CompanyDto {
 
     private Long id;
 
+    @JsonIgnore
     private String email;
 
+    @JsonIgnore
     private String password;
 
     private String name;
 
-    private CompanyDto company;
-
-    public RepresentativeDto(Long id, String email, String password, String name, CompanyDto company) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.company = company;
-    }
-
-    public RepresentativeDto() {
-    }
+    @JsonIgnore
+    private String description;
 
     public Long getId() {
         return id;
@@ -58,12 +52,12 @@ public class RepresentativeDto {
         this.name = name;
     }
 
-    public CompanyDto getCompany() {
-        return company;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCompany(CompanyDto company) {
-        this.company = company;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

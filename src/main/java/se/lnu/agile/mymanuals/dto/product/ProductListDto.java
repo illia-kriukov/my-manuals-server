@@ -1,4 +1,7 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.product;
+
+import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.company.CompanyDto;
 
 import java.util.List;
 

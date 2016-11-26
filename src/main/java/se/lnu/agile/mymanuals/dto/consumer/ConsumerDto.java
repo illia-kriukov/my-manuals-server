@@ -1,4 +1,4 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.consumer;
 
 /**
  * Created by Lo.Gas_2 on 23/11/2016.
