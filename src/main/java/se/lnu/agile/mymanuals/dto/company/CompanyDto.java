@@ -1,7 +1,5 @@
 package se.lnu.agile.mymanuals.dto.company;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * Created by ilyakruikov on 11/11/16.
  */
@@ -9,15 +7,12 @@ public class CompanyDto {
 
     private Long id;
 
-    @JsonIgnore
     private String email;
 
-    @JsonIgnore
     private String password;
 
     private String name;
 
-    @JsonIgnore
     private String description;
 
     public Long getId() {
