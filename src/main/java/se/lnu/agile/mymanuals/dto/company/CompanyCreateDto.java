@@ -1,4 +1,4 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.company;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

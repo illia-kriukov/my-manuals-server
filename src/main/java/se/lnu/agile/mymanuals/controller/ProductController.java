@@ -4,7 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import se.lnu.agile.mymanuals.dto.*;
+import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
+import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 
 import javax.validation.Valid;
 import java.security.Principal;

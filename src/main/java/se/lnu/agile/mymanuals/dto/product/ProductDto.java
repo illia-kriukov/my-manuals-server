@@ -1,4 +1,4 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.product;
 
 /**
  * Created by ToMeg on 2016-11-18.
