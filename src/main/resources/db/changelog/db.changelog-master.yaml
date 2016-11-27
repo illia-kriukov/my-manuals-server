@@ -306,3 +306,51 @@ databaseChangeLog:
                     type: varchar(50)
                     constraints:
                       nullable: false
+  - changeSet:
+        id: 15
+        author: kazilas.panagiotis
+        changes:
+          - createTable:
+              tableName: user_role
+              columns:
+                - column:
+                    name: email
+                    type: varchar(50)
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: role_id
+                    type: int
+                    constraints:
+                      nullable: false
+  - changeSet:
+        id: 16
+        author: kazilas.panagiotis
+        changes:
+          - createTable:
+              tableName: role
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: name
+                    type: varchar(20)
+                    constraints:
+                      nullable: false
+  - changeSet:
+        id: 17
+        author: kazilas.panagiotis
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: role_id
+              baseTableName: user_role
+              constraintName: fk_m_role_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: role
