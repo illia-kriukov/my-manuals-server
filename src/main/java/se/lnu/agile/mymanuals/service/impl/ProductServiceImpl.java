@@ -27,6 +27,10 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final Integer DEFAULT_PAGE = 10;
+
+    private static final Integer DEFAULT_COUNT = 0;
+
     @Autowired
     private CategoryDao categoryDao;
 
@@ -93,13 +97,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listProducts(Integer page, Integer count) {
+    public List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count) {
         List<Product> productList;
 
-        if (page != null && count != null) {
-            productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        if (validateCategoryByIds(categoryIds)) {
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAllByCategoryIds(categoryIds, new PageRequest(page, count)).getContent();
         } else {
-            productList = productDao.findAll();
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAll(new PageRequest(page, count)).getContent();
         }
 
         return productList == null ? null :
@@ -107,10 +119,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
+     * Perform validation of the parameters list in the listProducts method
+     *
+     * Check:
+     * -> Categories exist in the category table
+     */
+    public boolean validateCategoryByIds(List<Long> categoryIds) {
+        return (categoryIds != null && categoryIds.size() == categoryDao.findAll(categoryIds).size());
+    }
+
+    /**
      * Perform validation of the category's data at creation.
      *
      * Checks:
-     * -> Category name doesn't exists in category table
+     * -> Category name doesn't exists in the category table
      */
     private boolean validateCategory(String name) {
         if (categoryDao.findByName(name) != null) {
