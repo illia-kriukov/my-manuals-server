@@ -27,6 +27,10 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final Integer DEFAULT_PAGE = 10;
+
+    private static final Integer DEFAULT_COUNT = 0;
+
     @Autowired
     private CategoryDao categoryDao;
 
@@ -93,42 +97,42 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listProducts(Integer page, Integer count, List<Long> categories) {
+    public List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count) {
         List<Product> productList;
-        if (!validateCategoriesById(categories)) {
-            if (page != null && count != null) {
-                productList = productDao.findAll(new PageRequest(page, count)).getContent();
-            } else {
-                productList = productDao.findAll();
+
+        if (validateCategoryByIds(categoryIds)) {
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
             }
+            productList = productDao.findAllByCategoryIds(categoryIds, new PageRequest(page, count)).getContent();
         } else {
-            if (page != null && count != null) {
-                productList = productDao.findProductByCategories(categories, new PageRequest(page, count)).getContent();
-            } else {
-                productList = productDao.findProductByCategories(categories, new PageRequest(0, 10)).getContent();
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
             }
+            productList = productDao.findAll(new PageRequest(page, count)).getContent();
         }
 
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
 
-    /**Perform validation of the parameter list of method listProducts
-     * Check: All categories specified exist
+    /**
+     * Perform validation of the parameters list in the listProducts method
+     *
+     * Check:
+     * -> Categories exist in the category table
      */
-    public boolean validateCategoriesById(List<Long> categories) {
-        boolean result=true;
-        if (categoryDao.findAll(categories).size()!=categories.size())result=false;
-        if (categories==null) result=false;
-        return result;
-
+    public boolean validateCategoryByIds(List<Long> categoryIds) {
+        return (categoryIds != null && categoryIds.size() == categoryDao.findAll(categoryIds).size());
     }
 
     /**
      * Perform validation of the category's data at creation.
      *
      * Checks:
-     * -> Category name doesn't exists in category table
+     * -> Category name doesn't exists in the category table
      */
     private boolean validateCategory(String name) {
         if (categoryDao.findByName(name) != null) {
@@ -174,7 +178,5 @@ public class ProductServiceImpl implements ProductService {
 
         return true;
     }
-
-
 
 }

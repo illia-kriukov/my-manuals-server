@@ -18,6 +18,6 @@ public interface ProductService {
 
     void createProduct(ProductCreateDto dto, String representativeEmail);
 
-    List<ProductListDto> listProducts(Integer page, Integer count, List<Long> categories);
+    List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count);
 
 }

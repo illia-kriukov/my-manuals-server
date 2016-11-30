@@ -20,9 +20,9 @@ public interface ProductDao extends PagingAndSortingRepository<Product, Long> {
             "AND p.model = :model")
     String getModelByCompanyId(@Param("companyId") long companyId, @Param("model") String model);
 
-    @Query ("Select p FROM Product p JOIN p.category pc WHERE pc.id IN (:categoriesIds )")
-    Page<Product> findProductByCategories(@Param("categoriesIds")List<Long> categoriesIds, Pageable pageable);
-
-    List<Product> findAll();
+    @Query ("SELECT p " +
+            "FROM Product p JOIN p.category pc " +
+            "WHERE pc.id IN :categoryIds")
+    Page<Product> findAllByCategoryIds(@Param("categoryIds") List<Long> categoryIds, Pageable pageable);
 
 }

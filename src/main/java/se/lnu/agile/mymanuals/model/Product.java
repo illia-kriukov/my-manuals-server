@@ -100,30 +100,4 @@ public class Product {
         this.video = video;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Product product = (Product) o;
-
-        return new org.apache.commons.lang3.builder.EqualsBuilder()
-                .append(id, product.id)
-                .append(name, product.name)
-                .append(model, product.model)
-                .append(company, product.company)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new org.apache.commons.lang3.builder.HashCodeBuilder(17, 37)
-                .append(id)
-                .append(name)
-                .append(model)
-                .append(company)
-                .toHashCode();
-    }
-
 }
