@@ -93,17 +93,35 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listProducts(Integer page, Integer count) {
+    public List<ProductListDto> listProducts(Integer page, Integer count, List<Long> categories) {
         List<Product> productList;
-
-        if (page != null && count != null) {
-            productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        if (!validateCategoriesById(categories)) {
+            if (page != null && count != null) {
+                productList = productDao.findAll(new PageRequest(page, count)).getContent();
+            } else {
+                productList = productDao.findAll();
+            }
         } else {
-            productList = productDao.findAll();
+            if (page != null && count != null) {
+                productList = productDao.findProductByCategories(categories, new PageRequest(page, count)).getContent();
+            } else {
+                productList = productDao.findProductByCategories(categories, new PageRequest(0, 10)).getContent();
+            }
         }
 
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
+    /**Perform validation of the parameter list of method listProducts
+     * Check: All categories specified exist
+     */
+    public boolean validateCategoriesById(List<Long> categories) {
+        boolean result=true;
+        if (categoryDao.findAll(categories).size()!=categories.size())result=false;
+        if (categories==null) result=false;
+        return result;
+
     }
 
     /**
@@ -156,5 +174,7 @@ public class ProductServiceImpl implements ProductService {
 
         return true;
     }
+
+
 
 }

@@ -30,7 +30,8 @@ public interface ProductController {
 
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     List<ProductListDto> listProducts(@RequestParam(value = "page", required = false) Integer page,
-                                      @RequestParam(value = "count", required = false) Integer count);
+                                      @RequestParam(value = "count", required = false) Integer count,
+                                      @RequestParam(value="categories", required = false) List<Long> categories);
 
     @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
