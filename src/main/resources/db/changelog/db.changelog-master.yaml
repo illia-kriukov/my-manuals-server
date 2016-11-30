@@ -306,3 +306,52 @@ databaseChangeLog:
                     type: varchar(50)
                     constraints:
                       nullable: false
+  - changeSet:
+        id: 15
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: consumer_product
+              columns:
+                - column:
+                    name: consumer_id
+                    type: int
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_cp_consumer_id
+                      reference: consumer(id)
+                - column:
+                    name: product_id
+                    type: int
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_cp_product_id
+                      reference: product(id)
+  - changeSet:
+        id: 16
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: consumer_id
+              baseTableName: consumer_product
+              constraintName: fk_cp_consumer_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: consumer
+  - changeSet:
+        id: 17
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: consumer_product
+              constraintName: fk_cp_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product
