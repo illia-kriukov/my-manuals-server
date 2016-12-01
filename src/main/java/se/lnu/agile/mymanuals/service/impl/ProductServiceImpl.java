@@ -2,7 +2,6 @@ package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
@@ -14,15 +13,12 @@ import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
-import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
 import se.lnu.agile.mymanuals.service.ProductService;
 
-import javax.validation.Valid;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,11 +28,18 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final Integer DEFAULT_PAGE = 0;
+
+    private static final Integer DEFAULT_COUNT = 10;
+
     @Autowired
     private CategoryDao categoryDao;
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
+    private ConsumerDao consumerDao;
 
     @Autowired
     private RepresentativeDao representativeDao;
@@ -46,9 +49,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductToProductListDto productListConverter;
-
-    @Autowired
-    private ConsumerDao consumerDao;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -101,13 +101,43 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listProducts(Integer page, Integer count) {
+    public List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count) {
         List<Product> productList;
 
-        if (page != null && count != null) {
-            productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        if (validateCategoryByIds(categoryIds)) {
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAllByCategoryIds(categoryIds, new PageRequest(page, count)).getContent();
         } else {
-            productList = productDao.findAll();
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        }
+
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductListDto> searchProducts(String query, Integer page, Integer count) {
+        List<Product> productList;
+
+        if (query != null) {
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAllBySearchQuery(query, new PageRequest(page, count)).getContent();
+        } else {
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAll(new PageRequest(page, count)).getContent();
         }
 
         return productList == null ? null :
@@ -135,7 +165,7 @@ public class ProductServiceImpl implements ProductService {
      * Perform validation of the category's data at creation.
      *
      * Checks:
-     * -> Category name doesn't exist in category table
+     * -> Category name doesn't exist in the category table
      */
     private boolean validateCategory(String name) {
         if (categoryDao.findByName(name) != null) {
@@ -143,6 +173,16 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductException(String.format(msg, name));
         }
         return true;
+    }
+
+    /**
+     * Perform validation of the parameters list in the listProducts method
+     *
+     * Check:
+     * -> Categories exist in the category table
+     */
+    public boolean validateCategoryByIds(List<Long> categoryIds) {
+        return (categoryIds != null && categoryIds.size() == categoryDao.findAll(categoryIds).size());
     }
 
     /**

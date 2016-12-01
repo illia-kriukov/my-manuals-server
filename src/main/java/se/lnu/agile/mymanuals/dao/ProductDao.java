@@ -1,5 +1,7 @@
 package se.lnu.agile.mymanuals.dao;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +20,14 @@ public interface ProductDao extends PagingAndSortingRepository<Product, Long> {
             "AND p.model = :model")
     String getModelByCompanyId(@Param("companyId") long companyId, @Param("model") String model);
 
-    List<Product> findAll();
+    @Query ("SELECT p " +
+            "FROM Product p JOIN p.category pc " +
+            "WHERE pc.id IN :categoryIds")
+    Page<Product> findAllByCategoryIds(@Param("categoryIds") List<Long> categoryIds, Pageable pageable);
+
+    @Query ("SELECT p " +
+            "FROM Product p " +
+            "WHERE p.name LIKE %:query%")
+    Page<Product> findAllBySearchQuery(@Param("query") String query, Pageable pageable);
 
 }
