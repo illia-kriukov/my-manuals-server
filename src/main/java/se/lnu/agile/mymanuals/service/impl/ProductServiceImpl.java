@@ -114,11 +114,28 @@ public class ProductServiceImpl implements ProductService {
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
 
+    @Override
+    public void addToFavourites(Long productId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Product product = productDao.findOne(productId);
+
+        if (validateFavouriteProduct(consumer, product)) {
+            if (consumer.getProduct() != null) {
+                consumer.getProduct().add(product);
+            } else {
+                List<Product> products = new ArrayList<>();
+                products.add(product);
+                consumer.setProduct(products);
+            }
+            consumerDao.save(consumer);
+        }
+    }
+
     /**
      * Perform validation of the category's data at creation.
      *
      * Checks:
-     * -> Category name doesn't exists in category table
+     * -> Category name doesn't exist in category table
      */
     private boolean validateCategory(String name) {
         if (categoryDao.findByName(name) != null) {
@@ -165,23 +182,22 @@ public class ProductServiceImpl implements ProductService {
         return true;
     }
 
-    @Override
-    public void addProduct(Long productId, String consumerEmail ) {
-        Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        Product product = productDao.findOne(productId);
-
-        if(consumer != null && product != null){
-            if(consumer.getProduct() != null){
-                consumer.getProduct().add(product);
-            }
-            else{
-                List<Product> products = new ArrayList<>();
-                products.add(product);
-                consumer.setProduct(products);
-            }
-            consumerDao.save(consumer);
+    /**
+     * Perform validation of the favourite product's data at adding.
+     *
+     * Checks:
+     * -> Consumer and product exist in DB
+     * -> Consumer doesn't has current product in favourites
+     */
+    private boolean validateFavouriteProduct(Consumer consumer, Product product) {
+        if (consumer == null || product == null) {
+            String msg = "Something went wrong during adding product to favourites (incorrect customer email or product id). Please, try again.";
+            throw new ProductException(msg);
+        } else if (consumer.getProduct() != null && consumer.getProduct().contains(product)) {
+            String msg = "This product is already in your favourites.";
+            throw new ProductException(msg);
         }
-
+        return true;
     }
 
 }

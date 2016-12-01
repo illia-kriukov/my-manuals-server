@@ -62,10 +62,9 @@ public class ProductControllerImpl implements ProductController {
         productService.createProduct(productCreateDto, principal.getName());
     }
 
-    @RequestMapping(value="/addproduct", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
-    public void addProduct(@Valid Long productId, @AuthenticationPrincipal Principal principal) {
-        productService.addProduct(productId, principal.getName() );
+    @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
+    public void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal) {
+        productService.addToFavourites(productId, principal.getName());
     }
 
     @ExceptionHandler

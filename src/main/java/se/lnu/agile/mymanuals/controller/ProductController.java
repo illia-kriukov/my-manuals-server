@@ -37,8 +37,7 @@ public interface ProductController {
     @ResponseStatus(value= HttpStatus.CREATED)
     void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal);
 
-    @RequestMapping(value="/addproduct", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
-    void addProduct(@Valid Long productId, @AuthenticationPrincipal Principal principal);
+    @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
+    void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal);
 
 }

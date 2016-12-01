@@ -24,5 +24,6 @@ public interface ProductService {
 
     List<ProductListDto> listProducts(Integer page, Integer count);
 
-    void addProduct(Long productId, String consumerEmail );
+    void addToFavourites(Long productId, String consumerEmail);
+
 }
