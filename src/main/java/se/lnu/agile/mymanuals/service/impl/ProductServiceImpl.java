@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private static final Integer DEFAULT_PAGE = 10;
+    private static final Integer DEFAULT_PAGE = 0;
 
-    private static final Integer DEFAULT_COUNT = 0;
+    private static final Integer DEFAULT_COUNT = 10;
 
     @Autowired
     private CategoryDao categoryDao;
@@ -106,6 +106,28 @@ public class ProductServiceImpl implements ProductService {
                 count = DEFAULT_COUNT;
             }
             productList = productDao.findAllByCategoryIds(categoryIds, new PageRequest(page, count)).getContent();
+        } else {
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAll(new PageRequest(page, count)).getContent();
+        }
+
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductListDto> searchProducts(String query, Integer page, Integer count) {
+        List<Product> productList;
+
+        if (query != null) {
+            if (page == null || count == null) {
+                page = DEFAULT_PAGE;
+                count = DEFAULT_COUNT;
+            }
+            productList = productDao.findAllBySearchQuery(query, new PageRequest(page, count)).getContent();
         } else {
             if (page == null || count == null) {
                 page = DEFAULT_PAGE;

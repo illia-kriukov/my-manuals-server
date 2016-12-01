@@ -25,4 +25,9 @@ public interface ProductDao extends PagingAndSortingRepository<Product, Long> {
             "WHERE pc.id IN :categoryIds")
     Page<Product> findAllByCategoryIds(@Param("categoryIds") List<Long> categoryIds, Pageable pageable);
 
+    @Query ("SELECT p " +
+            "FROM Product p " +
+            "WHERE p.name LIKE %:query%")
+    Page<Product> findAllBySearchQuery(@Param("query") String query, Pageable pageable);
+
 }

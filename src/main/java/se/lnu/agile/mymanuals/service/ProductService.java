@@ -20,4 +20,6 @@ public interface ProductService {
 
     List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count);
 
+    List<ProductListDto> searchProducts(String query, Integer page, Integer count);
+
 }

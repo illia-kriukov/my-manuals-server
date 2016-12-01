@@ -48,6 +48,13 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
+    @RequestMapping(value="/product", method=RequestMethod.POST)
+    @ResponseStatus(value= HttpStatus.CREATED)
+    public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
+        productService.createProduct(productCreateDto, principal.getName());
+    }
+
+    @Override
     @RequestMapping(value="/products", method= RequestMethod.GET)
     public List<ProductListDto> listProducts(@RequestParam(value="categories", required = false) List<Long> categories,
                                              @RequestParam(value = "page", required = false) Integer page,
@@ -56,10 +63,11 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    @RequestMapping(value="/product", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
-    public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
-        productService.createProduct(productCreateDto, principal.getName());
+    @RequestMapping(value="/products/search", method= RequestMethod.GET)
+    public List<ProductListDto> searchProducts(@RequestParam(value = "query") String query,
+                                               @RequestParam(value = "page", required = false) Integer page,
+                                               @RequestParam(value = "count", required = false) Integer count) {
+        return productService.searchProducts(query, page, count);
     }
 
     @ExceptionHandler
