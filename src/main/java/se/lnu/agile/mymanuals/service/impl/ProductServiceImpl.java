@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
 import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
+import se.lnu.agile.mymanuals.dao.ConsumerDao;
 import se.lnu.agile.mymanuals.dao.ProductDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
@@ -36,6 +37,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
+    private ConsumerDao consumerDao;
 
     @Autowired
     private RepresentativeDao representativeDao;
@@ -140,6 +144,37 @@ public class ProductServiceImpl implements ProductService {
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
 
+    @Override
+    public void addToFavourites(Long productId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Product product = productDao.findOne(productId);
+
+        if (validateFavouriteProduct(consumer, product)) {
+            if (consumer.getProduct() != null) {
+                consumer.getProduct().add(product);
+            } else {
+                List<Product> products = new ArrayList<>();
+                products.add(product);
+                consumer.setProduct(products);
+            }
+            consumerDao.save(consumer);
+        }
+    }
+
+    /**
+     * Perform validation of the category's data at creation.
+     *
+     * Checks:
+     * -> Category name doesn't exist in the category table
+     */
+    private boolean validateCategory(String name) {
+        if (categoryDao.findByName(name) != null) {
+            String msg = "Failed to create category '%s'. A category with such name already exists.";
+            throw new ProductException(String.format(msg, name));
+        }
+        return true;
+    }
+
     /**
      * Perform validation of the parameters list in the listProducts method
      *
@@ -148,20 +183,6 @@ public class ProductServiceImpl implements ProductService {
      */
     public boolean validateCategoryByIds(List<Long> categoryIds) {
         return (categoryIds != null && categoryIds.size() == categoryDao.findAll(categoryIds).size());
-    }
-
-    /**
-     * Perform validation of the category's data at creation.
-     *
-     * Checks:
-     * -> Category name doesn't exists in the category table
-     */
-    private boolean validateCategory(String name) {
-        if (categoryDao.findByName(name) != null) {
-            String msg = "Failed to create category '%s'. A category with such name already exists.";
-            throw new ProductException(String.format(msg, name));
-        }
-        return true;
     }
 
     /**
@@ -198,6 +219,24 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
+        return true;
+    }
+
+    /**
+     * Perform validation of the favourite product's data at adding.
+     *
+     * Checks:
+     * -> Consumer and product exist in DB
+     * -> Consumer doesn't has current product in favourites
+     */
+    private boolean validateFavouriteProduct(Consumer consumer, Product product) {
+        if (consumer == null || product == null) {
+            String msg = "Something went wrong during adding product to favourites (incorrect customer email or product id). Please, try again.";
+            throw new ProductException(msg);
+        } else if (consumer.getProduct() != null && consumer.getProduct().contains(product)) {
+            String msg = "This product is already in your favourites.";
+            throw new ProductException(msg);
+        }
         return true;
     }
 

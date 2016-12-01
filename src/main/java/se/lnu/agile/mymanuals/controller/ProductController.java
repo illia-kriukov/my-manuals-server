@@ -42,4 +42,7 @@ public interface ProductController {
                                         @RequestParam(value = "page", required = false) Integer page,
                                         @RequestParam(value = "count", required = false) Integer count);
 
+    @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
+    void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal);
+
 }

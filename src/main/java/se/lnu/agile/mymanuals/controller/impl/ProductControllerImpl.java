@@ -11,6 +11,7 @@ import se.lnu.agile.mymanuals.controller.ProductController;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
@@ -68,6 +69,11 @@ public class ProductControllerImpl implements ProductController {
                                                @RequestParam(value = "page", required = false) Integer page,
                                                @RequestParam(value = "count", required = false) Integer count) {
         return productService.searchProducts(query, page, count);
+    }
+
+    @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
+    public void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal) {
+        productService.addToFavourites(productId, principal.getName());
     }
 
     @ExceptionHandler
