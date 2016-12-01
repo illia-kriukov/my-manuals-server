@@ -11,6 +11,7 @@ import se.lnu.agile.mymanuals.controller.ProductController;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
@@ -59,6 +60,12 @@ public class ProductControllerImpl implements ProductController {
     @ResponseStatus(value= HttpStatus.CREATED)
     public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
         productService.createProduct(productCreateDto, principal.getName());
+    }
+
+    @RequestMapping(value="/addproduct", method=RequestMethod.POST)
+    @ResponseStatus(value= HttpStatus.CREATED)
+    public void addProduct(@Valid Long productId, @AuthenticationPrincipal Principal principal) {
+        productService.addProduct(productId, principal.getName() );
     }
 
     @ExceptionHandler

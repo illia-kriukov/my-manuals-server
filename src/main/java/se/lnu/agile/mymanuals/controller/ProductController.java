@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 
 import javax.validation.Valid;
@@ -35,5 +36,9 @@ public interface ProductController {
     @RequestMapping(value="/product", method=RequestMethod.POST)
     @ResponseStatus(value= HttpStatus.CREATED)
     void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/addproduct", method=RequestMethod.POST)
+    @ResponseStatus(value= HttpStatus.CREATED)
+    void addProduct(@Valid Long productId, @AuthenticationPrincipal Principal principal);
 
 }

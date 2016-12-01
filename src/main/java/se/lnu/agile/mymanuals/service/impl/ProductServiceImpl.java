@@ -2,22 +2,27 @@ package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
 import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
+import se.lnu.agile.mymanuals.dao.ConsumerDao;
 import se.lnu.agile.mymanuals.dao.ProductDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
 import se.lnu.agile.mymanuals.service.ProductService;
 
+import javax.validation.Valid;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,6 +46,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductToProductListDto productListConverter;
+
+    @Autowired
+    private ConsumerDao consumerDao;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -155,6 +163,25 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return true;
+    }
+
+    @Override
+    public void addProduct(Long productId, String consumerEmail ) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Product product = productDao.findOne(productId);
+
+        if(consumer != null && product != null){
+            if(consumer.getProduct() != null){
+                consumer.getProduct().add(product);
+            }
+            else{
+                List<Product> products = new ArrayList<>();
+                products.add(product);
+                consumer.setProduct(products);
+            }
+            consumerDao.save(consumer);
+        }
+
     }
 
 }
