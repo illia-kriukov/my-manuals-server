@@ -37,4 +37,9 @@ public interface ProductController {
     @ResponseStatus(value= HttpStatus.CREATED)
     void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal);
 
+    @RequestMapping(value = "/products/search", method= RequestMethod.GET)
+    List<ProductListDto> searchProducts (@RequestParam(value="query") String query,
+                                         @RequestParam(value = "page") Integer page,
+                                         @RequestParam(value = "count") Integer count);
+
 }

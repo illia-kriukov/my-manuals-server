@@ -62,6 +62,11 @@ public class ProductControllerImpl implements ProductController {
         productService.createProduct(productCreateDto, principal.getName());
     }
 
+    @Override
+    public List<ProductListDto> searchProducts(@RequestParam(value = "query") String query, @RequestParam(value = "page") Integer page, @RequestParam(value = "count") Integer count) {
+        return productService.searchProducts(query, page, count);
+    }
+
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(MethodArgumentNotValidException e) {

@@ -118,6 +118,27 @@ public class ProductServiceImpl implements ProductService {
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
 
+    @Override
+    public List<ProductListDto> searchProducts(String searchQuery, Integer page, Integer count) {
+        List<Product> productList;
+        if (searchQuery != null){
+            if(page == null || count == null) {
+                page= DEFAULT_PAGE;
+                count= DEFAULT_COUNT;
+            }
+            productList=productDao.findAllBySearchQuery(searchQuery, new PageRequest(page, count)).getContent();
+        } else {
+            if(page == null || count == null) {
+                page= DEFAULT_PAGE;
+                count= DEFAULT_COUNT;
+            }
+            productList= productDao.findAll(new PageRequest(page, count)).getContent();
+        }
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+
+    }
+
     /**
      * Perform validation of the parameters list in the listProducts method
      *
