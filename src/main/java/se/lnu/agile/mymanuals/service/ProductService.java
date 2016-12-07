@@ -27,6 +27,8 @@ public interface ProductService {
 
     ProductDto getProduct(Long productId);
 
-    List<ProductListDto> listConsumerProducts(String userEmail);
+    List<ProductListDto> listConsumerProducts(String consumerEmail);
+
+    List<ProductListDto> listCompanyProducts(String representativeEmail);
 
 }

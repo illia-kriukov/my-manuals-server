@@ -52,4 +52,7 @@ public interface ProductController {
     @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)
     List<ProductListDto> listConsumerProducts(@AuthenticationPrincipal Principal principal);
 
+    @RequestMapping(value = "/company/products", method = RequestMethod.GET)
+    List<ProductListDto> listCompanyProducts(@AuthenticationPrincipal Principal principal);
+
 }
