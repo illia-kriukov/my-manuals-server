@@ -28,4 +28,5 @@ public interface ProductService {
 
     void addToFavourites(Long productId, String consumerEmail);
 
+    ProductDto getProduct( Integer id);
 }

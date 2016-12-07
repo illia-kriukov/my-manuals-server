@@ -76,6 +76,11 @@ public class ProductControllerImpl implements ProductController {
         productService.addToFavourites(productId, principal.getName());
     }
 
+    @RequestMapping(value="/product", method=RequestMethod.GET)
+    public ProductDto getProduct ( Integer id) {
+        return productService.getProduct( id);
+    }
+
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(MethodArgumentNotValidException e) {
