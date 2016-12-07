@@ -19,6 +19,12 @@ public class ProductDto {
 
     private List<CategoryDto> categories;
 
+    private CompanyInfoDto company;
+
+    private List<String> videos;
+
+    private List<ManualDto> manuals;
+
     public List<String> getVideos() {
         return videos;
     }
@@ -34,12 +40,6 @@ public class ProductDto {
     public void setManuals(List<ManualDto> manuals) {
         this.manuals = manuals;
     }
-
-    private CompanyInfoDto company;
-
-    private List<String> videos;
-
-    private List<ManualDto> manuals;
 
     public Long getId() {
         return id;

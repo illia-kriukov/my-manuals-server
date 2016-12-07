@@ -12,6 +12,13 @@ public class ManualDto {
         return id;
     }
 
+    public ManualDto(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public ManualDto() {   }
+
     public void setId(Long id) {
         this.id = id;
     }

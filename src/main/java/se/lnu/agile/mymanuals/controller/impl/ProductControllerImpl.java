@@ -77,8 +77,8 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @RequestMapping(value="/product", method=RequestMethod.GET)
-    public ProductDto getProduct ( Integer id) {
-        return productService.getProduct( id);
+    public ProductDto getProduct (@RequestParam(value ="productId") Long productId){
+        return productService.getProduct( productId);
     }
 
     @ExceptionHandler

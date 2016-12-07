@@ -47,5 +47,5 @@ public interface ProductController {
     void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value="/product", method=RequestMethod.GET)
-    ProductDto getProduct (Integer id) ;
+    ProductDto getProduct (@RequestParam(value ="productId") Long productId) ;
 }
