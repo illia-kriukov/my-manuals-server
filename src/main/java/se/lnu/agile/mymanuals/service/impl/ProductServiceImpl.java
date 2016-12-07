@@ -53,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductToProductListDto productListConverter;
 
     @Autowired
-    private ProductToProductDto productToProductDto;
+    private ProductToProductDto productConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -166,9 +166,10 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
     public ProductDto getProduct(Long productId){
         Product product = productDao.findOne(productId);
-        return productToProductDto.apply(product);
+        return product == null ? null : productConverter.apply(product);
     }
 
     /**

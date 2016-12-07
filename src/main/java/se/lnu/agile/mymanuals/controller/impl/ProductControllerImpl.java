@@ -76,9 +76,9 @@ public class ProductControllerImpl implements ProductController {
         productService.addToFavourites(productId, principal.getName());
     }
 
-    @RequestMapping(value="/product", method=RequestMethod.GET)
-    public ProductDto getProduct (@RequestParam(value ="productId") Long productId){
-        return productService.getProduct( productId);
+    @RequestMapping(value = "/product", method = RequestMethod.GET)
+    public ProductDto getProduct(@RequestParam(value = "productId") Long productId) {
+        return productService.getProduct(productId);
     }
 
     @ExceptionHandler

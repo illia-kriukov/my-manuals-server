@@ -25,22 +25,6 @@ public class ProductDto {
 
     private List<ManualDto> manuals;
 
-    public List<String> getVideos() {
-        return videos;
-    }
-
-    public void setVideos(List<String> videos) {
-        this.videos = videos;
-    }
-
-    public List<ManualDto> getManuals() {
-        return manuals;
-    }
-
-    public void setManuals(List<ManualDto> manuals) {
-        this.manuals = manuals;
-    }
-
     public Long getId() {
         return id;
     }
@@ -65,6 +49,14 @@ public class ProductDto {
         this.model = model;
     }
 
+    public List<CategoryDto> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<CategoryDto> categories) {
+        this.categories = categories;
+    }
+
     public CompanyInfoDto getCompany() {
         return company;
     }
@@ -73,11 +65,20 @@ public class ProductDto {
         this.company = company;
     }
 
-    public List<CategoryDto> getCategories() {
-
-        return categories;    }
-
-    public void setCategories(List<CategoryDto> categories) {
-        this.categories = categories;
+    public List<String> getVideos() {
+        return videos;
     }
+
+    public void setVideos(List<String> videos) {
+        this.videos = videos;
+    }
+
+    public List<ManualDto> getManuals() {
+        return manuals;
+    }
+
+    public void setManuals(List<ManualDto> manuals) {
+        this.manuals = manuals;
+    }
+
 }
