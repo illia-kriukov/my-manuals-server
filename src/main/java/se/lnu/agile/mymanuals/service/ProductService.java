@@ -28,6 +28,6 @@ public interface ProductService {
 
     void addToFavourites(Long productId, String consumerEmail);
 
-    List<ProductListDto> listProductsByUser (String userName);
+    List<ProductListDto> listConsumerProducts(String userEmail);
 
 }

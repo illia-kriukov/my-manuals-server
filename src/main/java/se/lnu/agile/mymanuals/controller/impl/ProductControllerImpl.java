@@ -4,7 +4,6 @@ package se.lnu.agile.mymanuals.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,14 +12,13 @@ import se.lnu.agile.mymanuals.controller.ProductController;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
-import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.service.ProductService;
-import org.springframework.security.core.Authentication;
+
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -79,10 +77,8 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)
-    public List<ProductListDto> listProductsByUser(@AuthenticationPrincipal Principal principal){
-
-            return productService.listProductsByUser(principal.getName());
-
+    public List<ProductListDto> listConsumerProducts(@AuthenticationPrincipal Principal principal){
+        return productService.listConsumerProducts(principal.getName());
     }
 
     @ExceptionHandler

@@ -162,12 +162,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listProductsByUser(String userName) {
-        consumerDao.findByEmail(userName);
-        List<Product> productList= consumerDao.findByEmail(userName).getProduct();
+    public List<ProductListDto> listConsumerProducts(String userEmail) {
+        List<Product> productList = consumerDao.findByEmail(userEmail).getProduct();
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
-
     }
 
     /**
