@@ -3,6 +3,7 @@ package se.lnu.agile.mymanuals.service;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 
 import java.util.List;
@@ -23,6 +24,8 @@ public interface ProductService {
     List<ProductListDto> searchProducts(String query, Integer page, Integer count);
 
     void addToFavourites(Long productId, String consumerEmail);
+
+    ProductDto getProduct(Long productId);
 
     List<ProductListDto> listConsumerProducts(String consumerEmail);
 

@@ -2,12 +2,12 @@ package se.lnu.agile.mymanuals.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 
 import javax.validation.Valid;
@@ -45,6 +45,9 @@ public interface ProductController {
 
     @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
     void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "/product", method = RequestMethod.GET)
+    ProductDto getProduct(@RequestParam(value = "productId") Long productId);
 
     @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)
     List<ProductListDto> listConsumerProducts(@AuthenticationPrincipal Principal principal);
