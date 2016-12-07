@@ -1,5 +1,6 @@
 package se.lnu.agile.mymanuals.dao;
 
+import org.springframework.data.repository.PagingAndSortingRepository;
 import se.lnu.agile.mymanuals.model.Consumer;
 import org.springframework.data.repository.CrudRepository;
 

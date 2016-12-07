@@ -161,6 +161,15 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public List<ProductListDto> listProductsByUser(String userName) {
+        consumerDao.findByEmail(userName);
+        List<Product> productList= consumerDao.findByEmail(userName).getProduct();
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+
+    }
+
     /**
      * Perform validation of the category's data at creation.
      *

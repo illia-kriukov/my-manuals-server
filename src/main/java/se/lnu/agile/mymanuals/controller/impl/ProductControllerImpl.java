@@ -1,8 +1,10 @@
 package se.lnu.agile.mymanuals.controller.impl;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,7 +20,7 @@ import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.service.ProductService;
-
+import org.springframework.security.core.Authentication;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -74,6 +76,13 @@ public class ProductControllerImpl implements ProductController {
     @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
     public void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal) {
         productService.addToFavourites(productId, principal.getName());
+    }
+
+    @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)
+    public List<ProductListDto> listProductsByUser(@AuthenticationPrincipal Principal principal){
+
+            return productService.listProductsByUser(principal.getName());
+
     }
 
     @ExceptionHandler
