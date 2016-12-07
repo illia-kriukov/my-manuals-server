@@ -71,14 +71,22 @@ public class ProductControllerImpl implements ProductController {
         return productService.searchProducts(query, page, count);
     }
 
+    @Override
     @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
     public void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal) {
         productService.addToFavourites(productId, principal.getName());
     }
 
+    @Override
     @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)
     public List<ProductListDto> listConsumerProducts(@AuthenticationPrincipal Principal principal){
         return productService.listConsumerProducts(principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value = "/company/products", method = RequestMethod.GET)
+    public List<ProductListDto> listCompanyProducts(@AuthenticationPrincipal Principal principal) {
+        return productService.listCompanyProducts(principal.getName());
     }
 
     @ExceptionHandler

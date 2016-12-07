@@ -30,4 +30,6 @@ public interface ProductService {
 
     List<ProductListDto> listConsumerProducts(String userEmail);
 
+    List<ProductListDto> listCompanyProducts(String representativeEmail);
+
 }

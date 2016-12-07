@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
 import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
-import se.lnu.agile.mymanuals.dao.CategoryDao;
-import se.lnu.agile.mymanuals.dao.ConsumerDao;
-import se.lnu.agile.mymanuals.dao.ProductDao;
-import se.lnu.agile.mymanuals.dao.RepresentativeDao;
+import se.lnu.agile.mymanuals.dao.*;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
@@ -43,6 +40,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private RepresentativeDao representativeDao;
+
+    @Autowired
+    private CompanyDao companyDao;
 
     @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
@@ -164,6 +164,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductListDto> listConsumerProducts(String userEmail) {
         List<Product> productList = consumerDao.findByEmail(userEmail).getProduct();
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
+    /**
+     * @param representativeEmail as identifier for the representative who works for the company
+     * @return a list with all products of the company (to which the representative belongs)
+     */
+    @Override
+    public List<ProductListDto> listCompanyProducts(String representativeEmail) {
+        Representative representative = representativeDao.findByEmail(representativeEmail);
+        List<Product> productList = productDao.findByCompanyId(representative.getCompany().getId());
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
