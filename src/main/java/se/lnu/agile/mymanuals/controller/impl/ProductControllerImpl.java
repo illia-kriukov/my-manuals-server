@@ -81,6 +81,11 @@ public class ProductControllerImpl implements ProductController {
         return productService.getProduct(productId);
     }
 
+    @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)
+    public List<ProductListDto> listConsumerProducts(@AuthenticationPrincipal Principal principal){
+        return productService.listConsumerProducts(principal.getName());
+    }
+
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(MethodArgumentNotValidException e) {

@@ -172,6 +172,13 @@ public class ProductServiceImpl implements ProductService {
         return product == null ? null : productConverter.apply(product);
     }
 
+    @Override
+    public List<ProductListDto> listConsumerProducts(String userEmail) {
+        List<Product> productList = consumerDao.findByEmail(userEmail).getProduct();
+        return productList == null ? null :
+                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
     /**
      * Perform validation of the category's data at creation.
      *
@@ -250,4 +257,5 @@ public class ProductServiceImpl implements ProductService {
         }
         return true;
     }
+
 }
