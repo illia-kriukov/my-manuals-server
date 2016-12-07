@@ -1,6 +1,5 @@
 package se.lnu.agile.mymanuals.controller.impl;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,6 +11,7 @@ import se.lnu.agile.mymanuals.controller.ProductController;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
@@ -74,6 +74,11 @@ public class ProductControllerImpl implements ProductController {
     @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
     public void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal) {
         productService.addToFavourites(productId, principal.getName());
+    }
+
+    @RequestMapping(value = "/product", method = RequestMethod.GET)
+    public ProductDto getProduct(@RequestParam(value = "productId") Long productId) {
+        return productService.getProduct(productId);
     }
 
     @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)

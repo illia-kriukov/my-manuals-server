@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
+import se.lnu.agile.mymanuals.converter.ProductToProductDto;
 import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
 import se.lnu.agile.mymanuals.dao.CategoryDao;
 import se.lnu.agile.mymanuals.dao.ConsumerDao;
@@ -13,6 +14,7 @@ import se.lnu.agile.mymanuals.dao.RepresentativeDao;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
+import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
@@ -49,6 +51,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductToProductListDto productListConverter;
+
+    @Autowired
+    private ProductToProductDto productConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -159,6 +164,12 @@ public class ProductServiceImpl implements ProductService {
             }
             consumerDao.save(consumer);
         }
+    }
+
+    @Override
+    public ProductDto getProduct(Long productId){
+        Product product = productDao.findOne(productId);
+        return product == null ? null : productConverter.apply(product);
     }
 
     @Override
