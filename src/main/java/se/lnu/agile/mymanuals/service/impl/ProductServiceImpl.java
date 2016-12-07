@@ -42,9 +42,6 @@ public class ProductServiceImpl implements ProductService {
     private RepresentativeDao representativeDao;
 
     @Autowired
-    private CompanyDao companyDao;
-
-    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
@@ -162,13 +159,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listConsumerProducts(String userEmail) {
-        List<Product> productList = consumerDao.findByEmail(userEmail).getProduct();
+    public List<ProductListDto> listConsumerProducts(String consumerEmail) {
+        List<Product> productList = consumerDao.findByEmail(consumerEmail).getProduct();
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
     }
 
     /**
+     * List with all products of the company.
+     *
      * @param representativeEmail as identifier for the representative who works for the company
      * @return a list with all products of the company (to which the representative belongs)
      */
