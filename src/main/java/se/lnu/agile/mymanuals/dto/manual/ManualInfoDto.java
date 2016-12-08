@@ -1,23 +1,20 @@
 package se.lnu.agile.mymanuals.dto.manual;
 
 /**
- * Created by Lo.Gas_2 on 7/12/2016.
+ * Created by ilyakruikov on 12/8/16.
  */
-public class ManualDto {
+public class ManualInfoDto {
 
     private Long id;
 
     private String name;
 
-    private byte[] file;
-
-    public ManualDto(Long id, String name, byte[] file) {
+    public ManualInfoDto(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.file = file;
     }
 
-    public ManualDto() {
+    public ManualInfoDto() {
     }
 
     public Long getId() {
@@ -34,14 +31,6 @@ public class ManualDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public byte[] getFile() {
-        return file;
-    }
-
-    public void setFile(byte[] file) {
-        this.file = file;
     }
 
 }

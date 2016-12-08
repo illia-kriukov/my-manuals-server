@@ -10,7 +10,9 @@ import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -54,5 +56,8 @@ public interface ProductController {
 
     @RequestMapping(value = "/company/products", method = RequestMethod.GET)
     List<ProductListDto> listCompanyProducts(@AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "/manual/{manualId}", method = RequestMethod.GET)
+    void getManual(@PathVariable("manualId") Long manualId, HttpServletResponse response) throws IOException;
 
 }

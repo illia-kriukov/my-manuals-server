@@ -5,14 +5,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
+import se.lnu.agile.mymanuals.converter.ManualToManualDto;
 import se.lnu.agile.mymanuals.converter.ProductToProductDto;
 import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
-import se.lnu.agile.mymanuals.dao.CategoryDao;
-import se.lnu.agile.mymanuals.dao.ConsumerDao;
-import se.lnu.agile.mymanuals.dao.ProductDao;
-import se.lnu.agile.mymanuals.dao.RepresentativeDao;
+import se.lnu.agile.mymanuals.dao.*;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.manual.ManualDto;
+import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
@@ -47,6 +47,9 @@ public class ProductServiceImpl implements ProductService {
     private RepresentativeDao representativeDao;
 
     @Autowired
+    private ManualDao manualDao;
+
+    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
@@ -54,6 +57,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductToProductDto productConverter;
+
+    @Autowired
+    private ManualToManualDto manualConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -177,6 +183,12 @@ public class ProductServiceImpl implements ProductService {
         List<Product> productList = consumerDao.findByEmail(consumerEmail).getProduct();
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
+    @Override
+    public ManualDto getManual(Long manualId) {
+        Manual manual = manualDao.findOne(manualId);
+        return manual == null ? null : manualConverter.apply(manual);
     }
 
     /**

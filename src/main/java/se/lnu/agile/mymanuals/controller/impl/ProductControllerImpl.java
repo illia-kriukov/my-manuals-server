@@ -1,5 +1,6 @@
 package se.lnu.agile.mymanuals.controller.impl;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.controller.ProductController;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
@@ -19,7 +21,9 @@ import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
 import se.lnu.agile.mymanuals.service.ProductService;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.*;
 import java.security.Principal;
 import java.util.List;
 
@@ -92,6 +96,22 @@ public class ProductControllerImpl implements ProductController {
     @RequestMapping(value = "/company/products", method = RequestMethod.GET)
     public List<ProductListDto> listCompanyProducts(@AuthenticationPrincipal Principal principal) {
         return productService.listCompanyProducts(principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value = "/manual/{manualId}", method = RequestMethod.GET)
+    public void getManual(@PathVariable("manualId") Long manualId, HttpServletResponse response) {
+        ManualDto manual = productService.getManual(manualId);
+        if (manual != null) {
+            response.addHeader("content-disposition", "inline;filename=" + manual.getName());
+            response.setContentType("application/pdf");
+            try {
+                IOUtils.copy(new ByteArrayInputStream(manual.getFile()), response.getOutputStream());
+                response.flushBuffer();
+            } catch(IOException e) {
+                throw new ProductException("Manual can't be downloaded.");
+            }
+        }
     }
 
     @ExceptionHandler

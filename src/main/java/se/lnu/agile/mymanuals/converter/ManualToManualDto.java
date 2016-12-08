@@ -1,5 +1,6 @@
 package se.lnu.agile.mymanuals.converter;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.model.Manual;
@@ -14,7 +15,9 @@ public class ManualToManualDto implements Function<Manual, ManualDto> {
 
     @Override
     public ManualDto apply(Manual manual) {
-        return new ManualDto(manual.getId(), manual.getName());
+        ManualDto manualDto = new ManualDto();
+        BeanUtils.copyProperties(manual, manualDto);
+        return manualDto;
     }
 
 }

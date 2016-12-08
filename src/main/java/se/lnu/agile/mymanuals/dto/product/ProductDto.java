@@ -2,7 +2,7 @@ package se.lnu.agile.mymanuals.dto.product;
 
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.company.CompanyInfoDto;
-import se.lnu.agile.mymanuals.dto.manual.ManualDto;
+import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class ProductDto {
 
     private List<String> videos;
 
-    private List<ManualDto> manuals;
+    private List<ManualInfoDto> manuals;
 
     public Long getId() {
         return id;
@@ -73,11 +73,11 @@ public class ProductDto {
         this.videos = videos;
     }
 
-    public List<ManualDto> getManuals() {
+    public List<ManualInfoDto> getManuals() {
         return manuals;
     }
 
-    public void setManuals(List<ManualDto> manuals) {
+    public void setManuals(List<ManualInfoDto> manuals) {
         this.manuals = manuals;
     }
 
