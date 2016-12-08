@@ -2,6 +2,8 @@ package se.lnu.agile.mymanuals.service;
 
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.manual.ManualDto;
+import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
@@ -30,5 +32,7 @@ public interface ProductService {
     List<ProductListDto> listConsumerProducts(String consumerEmail);
 
     List<ProductListDto> listCompanyProducts(String representativeEmail);
+
+    ManualDto getManual(Long manualId);
 
 }

@@ -21,7 +21,7 @@ public class ProductToProductDto implements Function<Product, ProductDto> {
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
-    private ManualToManualDto manualConverter;
+    private ManualToManualInfoDto manualInfoConverter;
 
     @Override
     public ProductDto apply(Product product) {
@@ -36,7 +36,7 @@ public class ProductToProductDto implements Function<Product, ProductDto> {
         productDto.setCategories(categoryListConverter.apply(product.getCategory()));
         productDto.setCompany(companyInfoDto);
         productDto.setVideos(product.getVideo().stream().map(Video::getLink).collect(Collectors.toList()));
-        productDto.setManuals(product.getManual().stream().map(manual -> manualConverter.apply(manual)).collect(Collectors.toList()));
+        productDto.setManuals(product.getManual().stream().map(manual -> manualInfoConverter.apply(manual)).collect(Collectors.toList()));
 
         return productDto;
     }
