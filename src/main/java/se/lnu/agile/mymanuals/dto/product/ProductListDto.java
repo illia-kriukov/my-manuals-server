@@ -20,6 +20,16 @@ public class ProductListDto {
 
     private CompanyInfoDto company;
 
+    private Boolean stored;
+
+    public Boolean getStored() {
+        return stored;
+    }
+
+    public void setStored(Boolean stored) {
+        this.stored = stored;
+    }
+
     public Long getId() {
         return id;
     }

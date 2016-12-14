@@ -61,6 +61,12 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ManualToManualDto manualConverter;
 
+    @Autowired
+    private ProductDto productDto;
+
+    @Autowired
+    private ProductListDto productListDto;
+
     @Override
     public void createCategory(CategoryCreateDto dto) {
         if (validateCategory(dto.getName())){
@@ -282,6 +288,26 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductException(msg);
         }
         return true;
+    }
+
+    private void checkStoredProduct (ProductDto productDto, String consumerEmail){
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Product product = productDao.findOne(productDto.getId());
+        if(product == null){
+            String msg = "There is no such product. Please, try again.";
+        }
+        else if(consumer == null){
+            String msg = "There is no such User. Please, try again.";
+        }
+        else {
+            if (consumer.getProduct().contains(product)) {
+                product.setStored(true);
+            }
+        }
+    }
+
+    private void checkStoredProductList (){
+
     }
 
 }
