@@ -22,8 +22,6 @@ public class Product {
     @Column(nullable = false)
     private String model;
 
-    private Boolean stored;
-
     @ManyToMany
     private List<Category> category;
 
@@ -47,14 +45,6 @@ public class Product {
     }
 
     public Product() {
-    }
-
-    public Boolean getStored() {
-        return stored;
-    }
-
-    public void setStored(Boolean stored) {
-        this.stored = stored;
     }
 
     public Long getId() {

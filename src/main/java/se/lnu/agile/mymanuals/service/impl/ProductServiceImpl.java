@@ -290,7 +290,7 @@ public class ProductServiceImpl implements ProductService {
         return true;
     }
 
-    private void checkStoredProduct (ProductDto productDto, String consumerEmail){
+    private ProductDto checkStoredProduct (ProductDto productDto, String consumerEmail){
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
         Product product = productDao.findOne(productDto.getId());
         if(product == null){
@@ -301,13 +301,32 @@ public class ProductServiceImpl implements ProductService {
         }
         else {
             if (consumer.getProduct().contains(product)) {
-                product.setStored(true);
+                productDto.setStored(true);
             }
         }
+
+        return productDto;
     }
 
-    private void checkStoredProductList (){
+    private List<ProductListDto> checkStoredProductList (List<ProductListDto> productListDto, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        List<ProductListDto> listConsumerProducts = listConsumerProducts(consumerEmail);
 
+        if (productListDto == null) {
+            String msg = "There is no such product. Please, try again.";
+        } else if (consumer == null) {
+            String msg = "There is no such User. Please, try again.";
+        } else {
+            for (int i = 0; i < productListDto.size(); i++) {
+                //Product product = productDao.findOne(productListDto.get(i).getId());
+                ProductListDto product = productListDto.get(i);
+                if (listConsumerProducts.contains(product)) {
+                    product.setStored(true);
+                    //product.setStored(true);
+                }
+            }
+        }
+        return productListDto;
     }
 
 }
