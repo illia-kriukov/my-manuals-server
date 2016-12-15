@@ -2,6 +2,7 @@ package se.lnu.agile.mymanuals.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
@@ -38,18 +39,24 @@ public interface ProductController {
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     List<ProductListDto> listProducts(@RequestParam(value="categories", required = false) List<Long> categories,
                                       @RequestParam(value = "page", required = false) Integer page,
-                                      @RequestParam(value = "count", required = false) Integer count);
+                                      @RequestParam(value = "count", required = false) Integer count,
+                                      @AuthenticationPrincipal Principal principal,
+                                      Authentication authentication);
 
     @RequestMapping(value = "/products/search", method= RequestMethod.GET)
     List<ProductListDto> searchProducts(@RequestParam(value="query") String query,
                                         @RequestParam(value = "page", required = false) Integer page,
-                                        @RequestParam(value = "count", required = false) Integer count);
+                                        @RequestParam(value = "count", required = false) Integer count,
+                                        @AuthenticationPrincipal Principal principal,
+                                        Authentication authentication);
 
     @RequestMapping(value="/products/favourites", method=RequestMethod.POST)
     void addToFavourites(@RequestParam(value ="productId") Long productId, @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value = "/product", method = RequestMethod.GET)
-    ProductDto getProduct(@RequestParam(value = "productId") Long productId);
+    ProductDto getProduct(@RequestParam(value = "productId") Long productId,
+                          @AuthenticationPrincipal Principal principal,
+                          Authentication authentication);
 
     @RequestMapping(value = "/consumer/products", method = RequestMethod.GET)
     List<ProductListDto> listConsumerProducts(@AuthenticationPrincipal Principal principal);

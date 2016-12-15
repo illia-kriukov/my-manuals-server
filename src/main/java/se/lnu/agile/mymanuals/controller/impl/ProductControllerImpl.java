@@ -1,10 +1,14 @@
 package se.lnu.agile.mymanuals.controller.impl;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.hibernate.annotations.SourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -63,16 +67,20 @@ public class ProductControllerImpl implements ProductController {
     @RequestMapping(value="/products", method= RequestMethod.GET)
     public List<ProductListDto> listProducts(@RequestParam(value="categories", required = false) List<Long> categories,
                                              @RequestParam(value = "page", required = false) Integer page,
-                                             @RequestParam(value = "count", required = false) Integer count) {
-        return productService.listProducts(categories, page, count);
+                                             @RequestParam(value = "count", required = false) Integer count,
+                                             @AuthenticationPrincipal Principal principal,
+                                             Authentication authentication) {
+        return productService.listProducts(categories, page, count, getConsumerEmail(principal, authentication));
     }
 
     @Override
     @RequestMapping(value="/products/search", method= RequestMethod.GET)
     public List<ProductListDto> searchProducts(@RequestParam(value = "query") String query,
                                                @RequestParam(value = "page", required = false) Integer page,
-                                               @RequestParam(value = "count", required = false) Integer count) {
-        return productService.searchProducts(query, page, count);
+                                               @RequestParam(value = "count", required = false) Integer count,
+                                               @AuthenticationPrincipal Principal principal,
+                                               Authentication authentication) {
+        return productService.searchProducts(query, page, count, getConsumerEmail(principal, authentication));
     }
 
     @Override
@@ -81,9 +89,12 @@ public class ProductControllerImpl implements ProductController {
         productService.addToFavourites(productId, principal.getName());
     }
 
+    @Override
     @RequestMapping(value = "/product", method = RequestMethod.GET)
-    public ProductDto getProduct(@RequestParam(value = "productId") Long productId) {
-        return productService.getProduct(productId);
+    public ProductDto getProduct(@RequestParam(value = "productId") Long productId,
+                                 @AuthenticationPrincipal Principal principal,
+                                 Authentication authentication) {
+        return productService.getProduct(productId, getConsumerEmail(principal, authentication));
     }
 
     @Override
@@ -112,6 +123,11 @@ public class ProductControllerImpl implements ProductController {
                 throw new ProductException("Manual can't be downloaded.");
             }
         }
+    }
+
+    private String getConsumerEmail(Principal principal, Authentication authentication) {
+        return principal == null || !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) ?
+                null : principal.getName();
     }
 
     @ExceptionHandler
