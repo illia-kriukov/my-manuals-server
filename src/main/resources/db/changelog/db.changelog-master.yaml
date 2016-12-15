@@ -355,3 +355,96 @@ databaseChangeLog:
               onUpdate: RESTRICT
               referencedColumnNames: id
               referencedTableName: product
+  - changeSet:
+        id: 18
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: subscription
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: name
+                    type: varchar(100)
+                    constraints:
+                      nullable: false
+  - changeSet:
+        id: 19
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: consumer_subscription
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: consumer_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_cs_consumer_id
+                      reference: consumer(id)
+                - column:
+                    name: product_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_cs_product_id
+                      reference: product(id)
+                - column:
+                    name: subscription_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_cs_subscription_id
+                      reference: subscription(id)
+  - changeSet:
+        id: 20
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: consumer_id
+              baseTableName: consumer_subscription
+              constraintName: fk_cs_consumer_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: consumer
+  - changeSet:
+        id: 21
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: consumer_subscription
+              constraintName: fk_cs_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product
+  - changeSet:
+        id: 22
+        author: illia.kriukov
+        changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: subscription_id
+              baseTableName: consumer_subscription
+              constraintName: fk_cs_subscription_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: subscription
