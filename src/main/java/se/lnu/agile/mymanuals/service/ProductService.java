@@ -21,13 +21,13 @@ public interface ProductService {
 
     void createProduct(ProductCreateDto dto, String representativeEmail);
 
-    List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count);
+    List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count, String consumerEmail);
 
-    List<ProductListDto> searchProducts(String query, Integer page, Integer count);
+    List<ProductListDto> searchProducts(String query, Integer page, Integer count, String consumerEmail);
 
     void addToFavourites(Long productId, String consumerEmail);
 
-    ProductDto getProduct(Long productId);
+    ProductDto getProduct(Long productId, String consumerEmail);
 
     List<ProductListDto> listConsumerProducts(String consumerEmail);
 
