@@ -6,5 +6,5 @@ import se.lnu.agile.mymanuals.model.Subscription;
 /**
  * Created by ilyakruikov on 12/15/16.
  */
-interface SubscriptionDao extends CrudRepository<Subscription, Long> {
+public interface SubscriptionDao extends CrudRepository<Subscription, Long> {
 }

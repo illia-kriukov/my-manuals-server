@@ -4,18 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
-import se.lnu.agile.mymanuals.converter.ManualToManualDto;
-import se.lnu.agile.mymanuals.converter.ProductToProductDto;
-import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
+import se.lnu.agile.mymanuals.converter.*;
 import se.lnu.agile.mymanuals.dao.*;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
-import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
 import se.lnu.agile.mymanuals.service.ProductService;
@@ -60,6 +57,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ManualToManualDto manualConverter;
+
+    @Autowired
+    private SubscriptionDao subscriptionDao;
+
+    @Autowired
+    private ConsumerSubscriptionDao consumerSubscriptionDao ;
+
+    @Autowired
+    private SubscriptionToSubscriptionDto subscriptionConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -189,6 +195,84 @@ public class ProductServiceImpl implements ProductService {
     public ManualDto getManual(Long manualId) {
         Manual manual = manualDao.findOne(manualId);
         return manual == null ? null : manualConverter.apply(manual);
+    }
+
+    @Override
+    public void subscribe(Long productId, Long subscriptionId, String name) {
+        Product product= productDao.findOne(productId);
+        if (product!=null){
+            Subscription subscription= subscriptionDao.findOne(subscriptionId);
+            if (subscription!=null){
+                Consumer consumer= consumerDao.findByEmail(name);
+                if (consumer!=null){
+                    ConsumerSubscription consumerSubscription = new ConsumerSubscription(consumer,product,subscription);
+                    consumerSubscriptionDao.save(consumerSubscription);
+                }else {
+                    String msg="No such user exists";
+                    throw new ProductException(msg);
+                }
+            }else{
+                String msg="This subscription type does not exist";
+                throw new ProductException(msg);
+            }
+        }else {
+            String msg= "Unable to find this product in our DB ";
+            throw new ProductException(msg);
+        }
+    }
+
+    @Override
+    public void unsubscribe(Long productId, Long subscriptionId, String name) {
+
+        Product product= productDao.findOne(productId);
+        if (product!=null){
+            Subscription subscription= subscriptionDao.findOne(subscriptionId);
+            if (subscription!=null){
+                Consumer consumer= consumerDao.findByEmail(name);
+                if (consumer!=null){
+                    ConsumerSubscription consumerSubscription= consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer,product,subscription);
+                    if (consumerSubscription!=null) {
+                        consumerSubscriptionDao.delete(consumerSubscription);
+                    }else {
+                        String msg="User is not subscribed for this type of subscription and product";
+                        throw  new ProductException(msg);
+                    }
+                }else {
+                    String msg="No such user exists";
+                    throw new ProductException(msg);
+                }
+            }else{
+                String msg="This subscription type does not exist";
+                throw new ProductException(msg);
+            }
+        }else {
+            String msg= "Unable to find this product in our DB ";
+            throw new ProductException(msg);
+        }
+    }
+
+    @Override
+    public List<SubscriptionDto> listSubscriptions() {
+        List<SubscriptionDto> result= new ArrayList<>();
+        Iterable<Subscription> subscriptionList=subscriptionDao.findAll();
+        for (Subscription s: subscriptionList ) {
+            result.add(subscriptionConverter.apply(s));
+        }
+        return result;
+    }
+
+    @Override
+    public List<Long> getConsumerSubscriptions(Long productId, String name) {
+        Consumer consumer=consumerDao.findByEmail(name);
+        if (consumer ==null) throw new RuntimeException("Consumer not existent");
+        Product product=productDao.findOne(productId);
+        if(product==null) throw new ProductException("product not existent");
+        List<ConsumerSubscription> consumerSubscriptionList=consumerSubscriptionDao.findAllByConsumerAndProduct(consumer,product);
+        List<Long> result=new ArrayList<>();
+        for (ConsumerSubscription cs: consumerSubscriptionList ) {
+            result.add(cs.getSubscription().getId());
+    }
+    return result;
     }
 
     /**

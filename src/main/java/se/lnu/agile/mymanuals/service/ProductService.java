@@ -7,6 +7,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import java.util.List;
 
@@ -35,4 +36,11 @@ public interface ProductService {
 
     ManualDto getManual(Long manualId);
 
+    void subscribe(Long productId, Long subscriptionId, String name);
+
+    void unsubscribe(Long productId, Long subscriptionId, String name);
+
+    List<SubscriptionDto> listSubscriptions();
+
+    List<Long> getConsumerSubscriptions(Long productId, String name);
 }

@@ -15,6 +15,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
 import se.lnu.agile.mymanuals.exception.ProductException;
@@ -112,6 +113,26 @@ public class ProductControllerImpl implements ProductController {
                 throw new ProductException("Manual can't be downloaded.");
             }
         }
+    }
+
+    @Override
+    public void subscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId, @AuthenticationPrincipal Principal principal) {
+        productService.subscribe(productId,subscriptionId, principal.getName());
+    }
+
+    @Override
+    public void unsubscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId, @AuthenticationPrincipal Principal principal) {
+        productService.unsubscribe(productId,subscriptionId, principal.getName());
+    }
+
+    @Override
+    public List<SubscriptionDto> listSubscriptions() {
+        return productService.listSubscriptions();
+    }
+
+    @Override
+    public List<Long> getConsumerSubscriptions(@PathVariable("productId") Long productId, @AuthenticationPrincipal Principal principal) {
+        return productService.getConsumerSubscriptions(productId, principal.getName());
     }
 
     @ExceptionHandler
