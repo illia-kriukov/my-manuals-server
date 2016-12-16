@@ -4,15 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
-import se.lnu.agile.mymanuals.converter.ManualToManualDto;
-import se.lnu.agile.mymanuals.converter.ProductToProductDto;
-import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
+import se.lnu.agile.mymanuals.converter.*;
 import se.lnu.agile.mymanuals.dao.*;
+import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
+import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
-import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
@@ -50,6 +48,15 @@ public class ProductServiceImpl implements ProductService {
     private ManualDao manualDao;
 
     @Autowired
+    private VideoDao videoDao;
+
+    @Autowired
+    private ManualAnnotationDao manualAnnotationDao;
+
+    @Autowired
+    private VideoAnnotationDao videoAnnotationDao;
+
+    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
@@ -60,6 +67,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ManualToManualDto manualConverter;
+
+    @Autowired
+    private ManualAnnotationListToManualAnnotationDtoList manualAnnotationConverter;
+
+    @Autowired
+    private VideoAnnotationListToVideoAnnotationDtoList videoAnnotationConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -191,6 +204,48 @@ public class ProductServiceImpl implements ProductService {
         return manual == null ? null : manualConverter.apply(manual);
     }
 
+    //TODO ------------- new stuff ---------------
+
+    @Override
+    public void addAnnotationToManual(Long manualId, String consumerEmail, String annotation) {
+        Manual manual = manualDao.findOne(manualId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        if(validateManualAnnotation(manual, consumer)){
+            ManualAnnotation manualAnnotation = new ManualAnnotation(manual, consumer, annotation);
+            manualAnnotationDao.save(manualAnnotation);
+        }
+    }
+
+    @Override
+    public void addAnnotationToVideo(Long videoId, String consumerEmail, String annotation) {
+        Video video = videoDao.findOne(videoId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        if(validateVideoAnnotation(video, consumer)){
+            VideoAnnotation videoAnnotation = new VideoAnnotation(video, consumer, annotation);
+            videoAnnotationDao.save(videoAnnotation);
+        }
+    }
+
+    @Override
+    public List<ManualAnnotationDto> listAnnotationsForManual(Long manualId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        List<ManualAnnotation> manualAnnotationList = manualAnnotationDao
+                .findByManual_idAndConsumer_id(manualId, consumer.getId());
+        return manualAnnotationList == null ? null : manualAnnotationConverter.apply(manualAnnotationList);
+    }
+
+    @Override
+    public List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        List<VideoAnnotation> videoAnnotationList =
+                videoAnnotationDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
+        return videoAnnotationList == null ? null : videoAnnotationConverter.apply(videoAnnotationList);
+    }
+
+
+    //TODO ------------- new stuff ---------------
+
+
     /**
      * List with all products of the company.
      *
@@ -284,4 +339,29 @@ public class ProductServiceImpl implements ProductService {
         return true;
     }
 
+    /**
+     * Perform validation of the new manual annotation
+     * Checks:
+     * -> Consumer and Manual exist in the database
+     */
+    private boolean validateManualAnnotation(Manual manual, Consumer consumer){
+        if (consumer == null || manual == null) {
+            String msg = "Something went wrong during adding your annotation. Please, try again.";
+            throw new ProductException(msg);
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the new manual annotation
+     * Checks:
+     * -> Consumer and Manual exist in the database
+     */
+    private boolean validateVideoAnnotation(Video video, Consumer consumer){
+        if (consumer == null || video == null) {
+            String msg = "Something went wrong during adding your annotation. Please, try again.";
+            throw new ProductException(msg);
+        }
+        return true;
+    }
 }

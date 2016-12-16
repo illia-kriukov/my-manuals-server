@@ -9,6 +9,8 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.controller.ProductController;
+import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
+import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
@@ -113,6 +115,43 @@ public class ProductControllerImpl implements ProductController {
             }
         }
     }
+
+
+    //TODO ------------------- new stuff -------------------------
+
+    @Override
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.POST)
+    public void addAnnotationToManual(@PathVariable("manualId") Long manualId,
+                                      @RequestParam(value = "annotation") String annotation,
+                                      @AuthenticationPrincipal Principal principal) {
+        productService.addAnnotationToManual(manualId, principal.getName(), annotation);
+    }
+
+    @Override
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.POST)
+    public void addAnnotationToVideo(@PathVariable("videoId") Long videoId,
+                                     @RequestParam(value = "annotation") String annotation,
+                                     @AuthenticationPrincipal Principal principal) {
+        productService.addAnnotationToVideo(videoId, principal.getName(), annotation);
+    }
+
+    @Override
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.GET)
+    public List<ManualAnnotationDto> listAnnotationsForManual(@PathVariable("manualId") Long manualId,
+                                                              @AuthenticationPrincipal Principal principal) {
+        return productService.listAnnotationsForManual(manualId, principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
+    public List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
+                                                            @AuthenticationPrincipal Principal principal) {
+        return productService.listAnnotationsForVideo(videoId, principal.getName());
+    }
+
+
+    //TODO ------------------- new stuff -------------------------
+
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)

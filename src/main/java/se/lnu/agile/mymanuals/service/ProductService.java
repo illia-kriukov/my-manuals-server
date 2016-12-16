@@ -1,9 +1,10 @@
 package se.lnu.agile.mymanuals.service;
 
+import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
+import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
-import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
@@ -34,5 +35,13 @@ public interface ProductService {
     List<ProductListDto> listCompanyProducts(String representativeEmail);
 
     ManualDto getManual(Long manualId);
+
+    void addAnnotationToManual(Long manualId, String consumerEmail, String annotation);
+
+    void addAnnotationToVideo(Long videoId, String consumerEmail, String annotation);
+
+    List<ManualAnnotationDto> listAnnotationsForManual(Long manualId, String consumerEmail);
+
+    List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail);
 
 }
