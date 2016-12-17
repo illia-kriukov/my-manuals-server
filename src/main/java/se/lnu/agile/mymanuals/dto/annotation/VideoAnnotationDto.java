@@ -9,10 +9,6 @@ public class VideoAnnotationDto {
 
     private Long id;
 
-    private String videoLink;
-
-    private ConsumerDto consumer;
-
     private String annotation;
 
     public Long getId() {
@@ -29,21 +25,5 @@ public class VideoAnnotationDto {
 
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
-    }
-
-    public String getVideoLink() {
-        return videoLink;
-    }
-
-    public void setVideoLink(String videoLink) {
-        this.videoLink = videoLink;
-    }
-
-    public ConsumerDto getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(ConsumerDto consumer) {
-        this.consumer = consumer;
     }
 }

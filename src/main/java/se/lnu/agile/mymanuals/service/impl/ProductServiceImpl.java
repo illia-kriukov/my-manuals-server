@@ -204,26 +204,23 @@ public class ProductServiceImpl implements ProductService {
         return manual == null ? null : manualConverter.apply(manual);
     }
 
-    //TODO ------------- new stuff ---------------
-
     @Override
     public void addAnnotationToManual(Long manualId, String consumerEmail, String annotation) {
         Manual manual = manualDao.findOne(manualId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        if(validateManualAnnotation(manual, consumer)){
-            ManualAnnotation manualAnnotation = new ManualAnnotation(manual, consumer, annotation);
-            manualAnnotationDao.save(manualAnnotation);
-        }
+        validateManualAnnotation(manual, consumer);
+        ManualAnnotation manualAnnotation = new ManualAnnotation(manual, consumer, annotation);
+        manualAnnotationDao.save(manualAnnotation);
     }
 
     @Override
     public void addAnnotationToVideo(Long videoId, String consumerEmail, String annotation) {
         Video video = videoDao.findOne(videoId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        if(validateVideoAnnotation(video, consumer)){
-            VideoAnnotation videoAnnotation = new VideoAnnotation(video, consumer, annotation);
-            videoAnnotationDao.save(videoAnnotation);
-        }
+        validateVideoAnnotation(video, consumer);
+        VideoAnnotation videoAnnotation = new VideoAnnotation(video, consumer, annotation);
+        videoAnnotationDao.save(videoAnnotation);
+
     }
 
     @Override
@@ -241,10 +238,6 @@ public class ProductServiceImpl implements ProductService {
                 videoAnnotationDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
         return videoAnnotationList == null ? null : videoAnnotationConverter.apply(videoAnnotationList);
     }
-
-
-    //TODO ------------- new stuff ---------------
-
 
     /**
      * List with all products of the company.
@@ -344,24 +337,30 @@ public class ProductServiceImpl implements ProductService {
      * Checks:
      * -> Consumer and Manual exist in the database
      */
-    private boolean validateManualAnnotation(Manual manual, Consumer consumer){
-        if (consumer == null || manual == null) {
-            String msg = "Something went wrong during adding your annotation. Please, try again.";
+    private void validateManualAnnotation(Manual manual, Consumer consumer){
+        if (consumer == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
             throw new ProductException(msg);
         }
-        return true;
+        if (manual == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown manual id). Please, try again.";
+            throw new ProductException(msg);
+        }
     }
 
     /**
      * Perform validation of the new manual annotation
      * Checks:
-     * -> Consumer and Manual exist in the database
+     * -> Consumer and Video exist in the database
      */
-    private boolean validateVideoAnnotation(Video video, Consumer consumer){
-        if (consumer == null || video == null) {
-            String msg = "Something went wrong during adding your annotation. Please, try again.";
+    private void validateVideoAnnotation(Video video, Consumer consumer){
+        if (consumer == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
             throw new ProductException(msg);
         }
-        return true;
+        if (video == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown video id). Please, try again.";
+            throw new ProductException(msg);
+        }
     }
 }

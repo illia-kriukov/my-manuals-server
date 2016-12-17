@@ -29,10 +29,6 @@ public class ManualAnnotationListToManualAnnotationDtoList
             ManualAnnotationDto manualAnnotationDto = new ManualAnnotationDto();
             BeanUtils.copyProperties(manualAnnotation, manualAnnotationDto);
 
-            ConsumerDto consumerDto = new ConsumerDto();
-            BeanUtils.copyProperties(manualAnnotation.getConsumer(), consumerDto);
-            manualAnnotationDto.setConsumer(consumerDto);
-
             manualAnnotationDtoList.add(manualAnnotationDto);
         }
 

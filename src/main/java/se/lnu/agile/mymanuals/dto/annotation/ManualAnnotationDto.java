@@ -10,10 +10,6 @@ public class ManualAnnotationDto {
 
     private Long id;
 
-    private ManualDto manual;
-
-    private ConsumerDto consumer;
-
     private String annotation;
 
     public Long getId() {
@@ -22,22 +18,6 @@ public class ManualAnnotationDto {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public ManualDto getManual() {
-        return manual;
-    }
-
-    public void setManual(ManualDto manual) {
-        this.manual = manual;
-    }
-
-    public ConsumerDto getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(ConsumerDto consumer) {
-        this.consumer = consumer;
     }
 
     public String getAnnotation() {
