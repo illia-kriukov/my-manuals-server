@@ -19,6 +19,7 @@ import se.lnu.agile.mymanuals.service.ProductService;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -118,7 +119,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count) {
+    public List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count, String consumerEmail) {
         List<Product> productList;
 
         if (validateCategoryByIds(categoryIds)) {
@@ -136,11 +137,11 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productList == null ? null :
-                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+                checkStoredProductList(productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList()), consumerEmail);
     }
 
     @Override
-    public List<ProductListDto> searchProducts(String query, Integer page, Integer count) {
+    public List<ProductListDto> searchProducts(String query, Integer page, Integer count, String consumerEmail) {
         List<Product> productList;
 
         if (query != null) {
@@ -158,7 +159,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productList == null ? null :
-                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+                checkStoredProductList(productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList()), consumerEmail);
     }
 
     @Override
@@ -179,16 +180,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProduct(Long productId){
+    public ProductDto getProduct(Long productId, String consumerEmail) {
         Product product = productDao.findOne(productId);
-        return product == null ? null : productConverter.apply(product);
+        return product == null ? null : checkStoredProduct(productConverter.apply(product), consumerEmail);
     }
 
     @Override
     public List<ProductListDto> listConsumerProducts(String consumerEmail) {
+        List<ProductListDto> result = null;
         List<Product> productList = consumerDao.findByEmail(consumerEmail).getProduct();
-        return productList == null ? null :
-                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+        if (productList != null) {
+            result = productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+            result.stream().forEach(p -> p.setStored(true));
+        }
+        return result;
     }
 
     @Override
@@ -251,6 +256,22 @@ public class ProductServiceImpl implements ProductService {
         List<Product> productList = productDao.findByCompanyId(representative.getCompany().getId());
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
+    private ProductDto checkStoredProduct(ProductDto productDto, String consumerEmail){
+        if (consumerEmail != null) {
+            List<ProductListDto> consumerProductList = listConsumerProducts(consumerEmail);
+            consumerProductList.stream().filter(p -> p.getId().equals(productDto.getId())).forEach(p -> productDto.setStored(true));
+        }
+        return productDto;
+    }
+
+    private List<ProductListDto> checkStoredProductList(List<ProductListDto> productList, String consumerEmail) {
+        if (consumerEmail != null) {
+            List<ProductListDto> consumerProductList = listConsumerProducts(consumerEmail);
+            productList.stream().filter(p -> consumerProductList.contains(p)).forEach(p -> p.setStored(true));
+        }
+        return productList;
     }
 
     /**
