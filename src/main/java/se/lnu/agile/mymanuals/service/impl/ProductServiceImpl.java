@@ -47,6 +47,12 @@ public class ProductServiceImpl implements ProductService {
     private ManualDao manualDao;
 
     @Autowired
+    private SubscriptionDao subscriptionDao;
+
+    @Autowired
+    private ConsumerSubscriptionDao consumerSubscriptionDao;
+
+    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
@@ -57,12 +63,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ManualToManualDto manualConverter;
-
-    @Autowired
-    private SubscriptionDao subscriptionDao;
-
-    @Autowired
-    private ConsumerSubscriptionDao consumerSubscriptionDao ;
 
     @Autowired
     private SubscriptionToSubscriptionDto subscriptionConverter;
@@ -198,81 +198,45 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void subscribe(Long productId, Long subscriptionId, String name) {
-        Product product= productDao.findOne(productId);
-        if (product!=null){
-            Subscription subscription= subscriptionDao.findOne(subscriptionId);
-            if (subscription!=null){
-                Consumer consumer= consumerDao.findByEmail(name);
-                if (consumer!=null){
-                    ConsumerSubscription consumerSubscription = new ConsumerSubscription(consumer,product,subscription);
-                    consumerSubscriptionDao.save(consumerSubscription);
-                }else {
-                    String msg="No such user exists";
-                    throw new ProductException(msg);
-                }
-            }else{
-                String msg="This subscription type does not exist";
-                throw new ProductException(msg);
-            }
-        }else {
-            String msg= "Unable to find this product in our DB ";
-            throw new ProductException(msg);
+    public void subscribe(Long productId, Long subscriptionId, String consumerEmail) {
+        Product product = productDao.findOne(productId);
+        Subscription subscription = subscriptionDao.findOne(subscriptionId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+
+        if (validateSubscription(product, subscription, consumer) && validateConsumerSubscription(product, subscription, consumer)) {
+            consumerSubscriptionDao.save(new ConsumerSubscription(consumer,product,subscription));
         }
     }
 
     @Override
-    public void unsubscribe(Long productId, Long subscriptionId, String name) {
+    public void unsubscribe(Long productId, Long subscriptionId, String consumerEmail) {
+        Product product = productDao.findOne(productId);
+        Subscription subscription = subscriptionDao.findOne(subscriptionId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        ConsumerSubscription consumerSubscription = consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer, product, subscription);
 
-        Product product= productDao.findOne(productId);
-        if (product!=null){
-            Subscription subscription= subscriptionDao.findOne(subscriptionId);
-            if (subscription!=null){
-                Consumer consumer= consumerDao.findByEmail(name);
-                if (consumer!=null){
-                    ConsumerSubscription consumerSubscription= consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer,product,subscription);
-                    if (consumerSubscription!=null) {
-                        consumerSubscriptionDao.delete(consumerSubscription);
-                    }else {
-                        String msg="User is not subscribed for this type of subscription and product";
-                        throw  new ProductException(msg);
-                    }
-                }else {
-                    String msg="No such user exists";
-                    throw new ProductException(msg);
-                }
-            }else{
-                String msg="This subscription type does not exist";
-                throw new ProductException(msg);
-            }
-        }else {
-            String msg= "Unable to find this product in our DB ";
-            throw new ProductException(msg);
+        if (validateSubscription(product, subscription, consumer) && validateConsumerSubscription(consumerSubscription)) {
+            consumerSubscriptionDao.delete(consumerSubscription);
         }
     }
 
     @Override
     public List<SubscriptionDto> listSubscriptions() {
-        List<SubscriptionDto> result= new ArrayList<>();
-        Iterable<Subscription> subscriptionList=subscriptionDao.findAll();
-        for (Subscription s: subscriptionList ) {
-            result.add(subscriptionConverter.apply(s));
-        }
-        return result;
+        List<Subscription> subscriptionList = subscriptionDao.findAll();
+        return subscriptionList == null ? null :
+                subscriptionList.stream().map(s -> subscriptionConverter.apply(s)).collect(Collectors.toList());
     }
 
     @Override
-    public List<Long> getConsumerSubscriptions(Long productId, String name) {
-        Consumer consumer=consumerDao.findByEmail(name);
-        if (consumer ==null) throw new RuntimeException("Consumer not existent");
-        Product product=productDao.findOne(productId);
-        if(product==null) throw new ProductException("product not existent");
-        List<ConsumerSubscription> consumerSubscriptionList=consumerSubscriptionDao.findAllByConsumerAndProduct(consumer,product);
-        List<Long> result=new ArrayList<>();
-        for (ConsumerSubscription cs: consumerSubscriptionList ) {
-            result.add(cs.getSubscription().getId());
-    }
-    return result;
+    public List<Long> listConsumerSubscriptions(Long productId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Product product = productDao.findOne(productId);
+
+        if (consumer == null) throw new ProductException("Consumer not existent");
+        if (product == null) throw new ProductException("Product not existent");
+
+        return consumerSubscriptionDao.findAllByConsumerAndProduct(consumer,product)
+                .stream().map(cs -> cs.getSubscription().getId()).collect(Collectors.toList());
     }
 
     /**
@@ -364,6 +328,49 @@ public class ProductServiceImpl implements ProductService {
         } else if (consumer.getProduct() != null && consumer.getProduct().contains(product)) {
             String msg = "This product is already in your favourites.";
             throw new ProductException(msg);
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data.
+     *
+     * Checks:
+     * -> Consumer, product and subscription exist in DB
+     */
+    private boolean validateSubscription(Product product, Subscription subscription, Consumer consumer) {
+        if (product == null) {
+            throw new ProductException("Unable to find this product in our DB");
+        } else if (subscription == null) {
+            throw new ProductException("This subscription type does not exist");
+        } else if (consumer == null) {
+            throw new ProductException("No such user exists");
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data at adding.
+     *
+     * Checks:
+     * -> Consumer are not subscribed for current subscription
+     */
+    private boolean validateConsumerSubscription(Product product, Subscription subscription, Consumer consumer) {
+        if (consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer, product, subscription) != null) {
+            throw new ProductException("You are already subscribed for this type of subscription and product");
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data at deleting.
+     *
+     * Checks:
+     * -> Consumer are subscribed for current subscription
+     */
+    private boolean validateConsumerSubscription(ConsumerSubscription consumerSubscription) {
+        if (consumerSubscription == null) {
+            throw  new ProductException("User is not subscribed for this type of subscription and product");
         }
         return true;
     }

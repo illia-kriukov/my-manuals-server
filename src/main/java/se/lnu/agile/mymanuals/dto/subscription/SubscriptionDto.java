@@ -24,4 +24,5 @@ public class SubscriptionDto {
     public void setName(String name) {
         this.name = name;
     }
+
 }

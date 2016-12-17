@@ -116,13 +116,15 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public void subscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId, @AuthenticationPrincipal Principal principal) {
-        productService.subscribe(productId,subscriptionId, principal.getName());
+    public void subscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                          @AuthenticationPrincipal Principal principal) {
+        productService.subscribe(productId, subscriptionId, principal.getName());
     }
 
     @Override
-    public void unsubscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId, @AuthenticationPrincipal Principal principal) {
-        productService.unsubscribe(productId,subscriptionId, principal.getName());
+    public void unsubscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                            @AuthenticationPrincipal Principal principal) {
+        productService.unsubscribe(productId, subscriptionId, principal.getName());
     }
 
     @Override
@@ -131,8 +133,9 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public List<Long> getConsumerSubscriptions(@PathVariable("productId") Long productId, @AuthenticationPrincipal Principal principal) {
-        return productService.getConsumerSubscriptions(productId, principal.getName());
+    public List<Long> listConsumerSubscriptions(@PathVariable("productId") Long productId,
+                                                @AuthenticationPrincipal Principal principal) {
+        return productService.listConsumerSubscriptions(productId, principal.getName());
     }
 
     @ExceptionHandler

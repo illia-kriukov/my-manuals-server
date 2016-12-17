@@ -1,9 +1,6 @@
 package se.lnu.agile.mymanuals.dao;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 import se.lnu.agile.mymanuals.model.Consumer;
 import se.lnu.agile.mymanuals.model.ConsumerSubscription;
 import se.lnu.agile.mymanuals.model.Product;
@@ -16,13 +13,8 @@ import java.util.List;
  */
 public interface ConsumerSubscriptionDao extends CrudRepository<ConsumerSubscription, Long> {
 
-
     ConsumerSubscription findByConsumerAndProductAndSubscription(Consumer consumer, Product product, Subscription subscription);
 
-
-
-
     List<ConsumerSubscription> findAllByConsumerAndProduct(Consumer consumer, Product product);
-
 
 }

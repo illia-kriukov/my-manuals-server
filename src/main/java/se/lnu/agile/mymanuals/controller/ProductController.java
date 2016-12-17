@@ -62,14 +62,18 @@ public interface ProductController {
     void getManual(@PathVariable("manualId") Long manualId, HttpServletResponse response) throws IOException;
 
     @RequestMapping(value = "product/{productId}/subscribe/{subscriptionId}", method = RequestMethod.POST)
-    void subscribe(@PathVariable("productId")Long productId, @PathVariable("subscriptionId")Long subscriptionId, @AuthenticationPrincipal Principal principal);
+    void subscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                   @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value = "product/{productId}/subscribe/{subscriptionId}", method = RequestMethod.DELETE)
-    void unsubscribe(@PathVariable("productId")Long productId, @PathVariable("subscriptionId")Long subscriptionId, @AuthenticationPrincipal Principal principal);
+    void unsubscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                     @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
     List<SubscriptionDto> listSubscriptions();
 
     @RequestMapping(value = "/consumer/product/{productId}/subscriptions", method = RequestMethod.GET)
-    List<Long> getConsumerSubscriptions(@PathVariable("productId")Long productId,@AuthenticationPrincipal Principal principal);
+    List<Long> listConsumerSubscriptions(@PathVariable("productId") Long productId,
+                                         @AuthenticationPrincipal Principal principal);
+
 }

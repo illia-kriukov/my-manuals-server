@@ -9,9 +9,8 @@ import se.lnu.agile.mymanuals.model.Subscription;
 /**
  * Created by ToMeg on 2016-12-15.
  */
-
 @Component
-public class SubscriptionToSubscriptionDto implements Function<Subscription,SubscriptionDto> {
+public class SubscriptionToSubscriptionDto implements Function<Subscription, SubscriptionDto> {
 
     @Override
     public SubscriptionDto apply(Subscription subscription) {
@@ -19,4 +18,5 @@ public class SubscriptionToSubscriptionDto implements Function<Subscription,Subs
         BeanUtils.copyProperties(subscription, subscriptionDto);
         return subscriptionDto;
     }
+
 }
