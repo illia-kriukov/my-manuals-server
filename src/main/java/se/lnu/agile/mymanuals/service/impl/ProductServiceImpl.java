@@ -4,18 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
-import se.lnu.agile.mymanuals.converter.ManualToManualDto;
-import se.lnu.agile.mymanuals.converter.ProductToProductDto;
-import se.lnu.agile.mymanuals.converter.ProductToProductListDto;
+import se.lnu.agile.mymanuals.converter.*;
 import se.lnu.agile.mymanuals.dao.*;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
-import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
 import se.lnu.agile.mymanuals.service.ProductService;
@@ -51,6 +48,12 @@ public class ProductServiceImpl implements ProductService {
     private ManualDao manualDao;
 
     @Autowired
+    private SubscriptionDao subscriptionDao;
+
+    @Autowired
+    private ConsumerSubscriptionDao consumerSubscriptionDao;
+
+    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
@@ -61,6 +64,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ManualToManualDto manualConverter;
+
+    @Autowired
+    private SubscriptionToSubscriptionDto subscriptionConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -196,6 +202,48 @@ public class ProductServiceImpl implements ProductService {
         return manual == null ? null : manualConverter.apply(manual);
     }
 
+    @Override
+    public void subscribe(Long productId, Long subscriptionId, String consumerEmail) {
+        Product product = productDao.findOne(productId);
+        Subscription subscription = subscriptionDao.findOne(subscriptionId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+
+        if (validateSubscription(product, subscription, consumer) && validateConsumerSubscription(product, subscription, consumer)) {
+            consumerSubscriptionDao.save(new ConsumerSubscription(consumer,product,subscription));
+        }
+    }
+
+    @Override
+    public void unsubscribe(Long productId, Long subscriptionId, String consumerEmail) {
+        Product product = productDao.findOne(productId);
+        Subscription subscription = subscriptionDao.findOne(subscriptionId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        ConsumerSubscription consumerSubscription = consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer, product, subscription);
+
+        if (validateSubscription(product, subscription, consumer) && validateConsumerSubscription(consumerSubscription)) {
+            consumerSubscriptionDao.delete(consumerSubscription);
+        }
+    }
+
+    @Override
+    public List<SubscriptionDto> listSubscriptions() {
+        List<Subscription> subscriptionList = subscriptionDao.findAll();
+        return subscriptionList == null ? null :
+                subscriptionList.stream().map(s -> subscriptionConverter.apply(s)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> listConsumerSubscriptions(Long productId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Product product = productDao.findOne(productId);
+
+        if (consumer == null) throw new ProductException("Consumer not existent");
+        if (product == null) throw new ProductException("Product not existent");
+
+        return consumerSubscriptionDao.findAllByConsumerAndProduct(consumer,product)
+                .stream().map(cs -> cs.getSubscription().getId()).collect(Collectors.toList());
+    }
+
     /**
      * List with all products of the company.
      *
@@ -301,6 +349,49 @@ public class ProductServiceImpl implements ProductService {
         } else if (consumer.getProduct() != null && consumer.getProduct().contains(product)) {
             String msg = "This product is already in your favourites.";
             throw new ProductException(msg);
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data.
+     *
+     * Checks:
+     * -> Consumer, product and subscription exist in DB
+     */
+    private boolean validateSubscription(Product product, Subscription subscription, Consumer consumer) {
+        if (product == null) {
+            throw new ProductException("Unable to find this product in our DB");
+        } else if (subscription == null) {
+            throw new ProductException("This subscription type does not exist");
+        } else if (consumer == null) {
+            throw new ProductException("No such user exists");
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data at adding.
+     *
+     * Checks:
+     * -> Consumer are not subscribed for current subscription
+     */
+    private boolean validateConsumerSubscription(Product product, Subscription subscription, Consumer consumer) {
+        if (consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer, product, subscription) != null) {
+            throw new ProductException("You are already subscribed for this type of subscription and product");
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data at deleting.
+     *
+     * Checks:
+     * -> Consumer are subscribed for current subscription
+     */
+    private boolean validateConsumerSubscription(ConsumerSubscription consumerSubscription) {
+        if (consumerSubscription == null) {
+            throw  new ProductException("User is not subscribed for this type of subscription and product");
         }
         return true;
     }

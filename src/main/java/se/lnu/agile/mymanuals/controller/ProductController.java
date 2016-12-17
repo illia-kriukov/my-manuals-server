@@ -10,6 +10,7 @@ import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -66,5 +67,20 @@ public interface ProductController {
 
     @RequestMapping(value = "/manual/{manualId}", method = RequestMethod.GET)
     void getManual(@PathVariable("manualId") Long manualId, HttpServletResponse response) throws IOException;
+
+    @RequestMapping(value = "product/{productId}/subscribe/{subscriptionId}", method = RequestMethod.POST)
+    void subscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                   @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "product/{productId}/subscribe/{subscriptionId}", method = RequestMethod.DELETE)
+    void unsubscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                     @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
+    List<SubscriptionDto> listSubscriptions();
+
+    @RequestMapping(value = "/consumer/product/{productId}/subscriptions", method = RequestMethod.GET)
+    List<Long> listConsumerSubscriptions(@PathVariable("productId") Long productId,
+                                         @AuthenticationPrincipal Principal principal);
 
 }
