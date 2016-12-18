@@ -1,8 +1,5 @@
 package se.lnu.agile.mymanuals.dto.annotation;
 
-import se.lnu.agile.mymanuals.dto.consumer.ConsumerDto;
-import se.lnu.agile.mymanuals.dto.manual.ManualDto;
-
 /**
  * Created by Daniel on 16.12.2016.
  */

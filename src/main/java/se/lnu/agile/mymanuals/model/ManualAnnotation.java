@@ -24,7 +24,6 @@ public class ManualAnnotation {
     private String annotation;
 
     public ManualAnnotation(){
-
     }
 
     public ManualAnnotation(Manual manual, Consumer consumer, String annotation) {
@@ -64,4 +63,5 @@ public class ManualAnnotation {
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
     }
+
 }

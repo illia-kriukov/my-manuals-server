@@ -24,7 +24,6 @@ public class VideoAnnotation {
     private String annotation;
 
     public VideoAnnotation(){
-
     }
 
     public VideoAnnotation(Video video, Consumer consumer, String annotation) {
@@ -64,4 +63,5 @@ public class VideoAnnotation {
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
     }
+
 }

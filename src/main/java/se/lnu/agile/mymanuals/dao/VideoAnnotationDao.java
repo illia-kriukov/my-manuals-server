@@ -9,9 +9,9 @@ import java.util.List;
 
 /**
  * Created by Daniel on 16.12.2016.
- *
  */
 public interface VideoAnnotationDao extends CrudRepository<VideoAnnotation, Long> {
 
     List<VideoAnnotation> findByVideo_idAndConsumer_id(Long video_id, Long consumer_id);
+
 }

@@ -63,14 +63,14 @@ public interface ProductController {
     @RequestMapping(value = "/manual/{manualId}", method = RequestMethod.GET)
     void getManual(@PathVariable("manualId") Long manualId, HttpServletResponse response) throws IOException;
 
-    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.POST)
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     void addAnnotationToManual(@PathVariable("manualId") Long manualId,
-                               @Valid AnnotationCreateDto annotationCreateDto,
+                               @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
                                @AuthenticationPrincipal Principal principal);
 
-    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.POST)
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     void addAnnotationToVideo(@PathVariable("videoId") Long videoId,
-                              @Valid AnnotationCreateDto annotationCreateDto,
+                              @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
                               @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.GET)

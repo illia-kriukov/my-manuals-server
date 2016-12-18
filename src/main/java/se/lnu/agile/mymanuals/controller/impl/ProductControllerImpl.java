@@ -118,17 +118,17 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.POST)
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void addAnnotationToManual(@PathVariable("manualId") Long manualId,
-                                      @Valid AnnotationCreateDto annotationCreateDto,
+                                      @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
                                       @AuthenticationPrincipal Principal principal) {
         productService.addAnnotationToManual(manualId, principal.getName(), annotationCreateDto.getAnnotation());
     }
 
     @Override
-    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.POST)
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void addAnnotationToVideo(@PathVariable("videoId") Long videoId,
-                                     @Valid AnnotationCreateDto annotationCreateDto,
+                                     @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
                                      @AuthenticationPrincipal Principal principal) {
         productService.addAnnotationToVideo(videoId, principal.getName(), annotationCreateDto.getAnnotation());
     }

@@ -8,9 +8,9 @@ import java.util.List;
 
 /**
  * Created by Daniel on 16.12.2016.
- *
  */
 public interface ManualAnnotationDao extends CrudRepository<ManualAnnotation, Long> {
 
     List<ManualAnnotation> findByManual_idAndConsumer_id(Long manual_id, Long consumer_id);
+
 }

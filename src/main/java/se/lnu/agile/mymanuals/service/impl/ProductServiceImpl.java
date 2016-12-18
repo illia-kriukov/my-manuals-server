@@ -333,34 +333,35 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Perform validation of the new manual annotation
+     * Perform validation of the new manual annotation.
+     *
      * Checks:
      * -> Consumer and Manual exist in the database
      */
-    private void validateManualAnnotation(Manual manual, Consumer consumer){
+    private void validateManualAnnotation(Manual manual, Consumer consumer) {
         if (consumer == null) {
             String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
             throw new ProductException(msg);
-        }
-        if (manual == null) {
+        } else if (manual == null) {
             String msg = "Something went wrong during adding your annotation (Unknown manual id). Please, try again.";
             throw new ProductException(msg);
         }
     }
 
     /**
-     * Perform validation of the new manual annotation
+     * Perform validation of the new video annotation.
+     *
      * Checks:
      * -> Consumer and Video exist in the database
      */
-    private void validateVideoAnnotation(Video video, Consumer consumer){
+    private void validateVideoAnnotation(Video video, Consumer consumer) {
         if (consumer == null) {
             String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
             throw new ProductException(msg);
-        }
-        if (video == null) {
+        } else if (video == null) {
             String msg = "Something went wrong during adding your annotation (Unknown video id). Please, try again.";
             throw new ProductException(msg);
         }
     }
+
 }
