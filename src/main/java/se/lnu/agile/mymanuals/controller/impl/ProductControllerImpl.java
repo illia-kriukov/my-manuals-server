@@ -12,6 +12,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import se.lnu.agile.mymanuals.controller.ProductController;
+import se.lnu.agile.mymanuals.dto.annotation.AnnotationCreateDto;
+import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
+import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
@@ -148,9 +151,34 @@ public class ProductControllerImpl implements ProductController {
         return productService.listConsumerSubscriptions(productId, principal.getName());
     }
 
-    private String getConsumerEmail(Principal principal, Authentication authentication) {
-        return principal == null || !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) ?
-                null : principal.getName();
+    @Override
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addAnnotationToManual(@PathVariable("manualId") Long manualId,
+                                      @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
+                                      @AuthenticationPrincipal Principal principal) {
+        productService.addAnnotationToManual(manualId, principal.getName(), annotationCreateDto.getAnnotation());
+    }
+
+    @Override
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addAnnotationToVideo(@PathVariable("videoId") Long videoId,
+                                     @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
+                                     @AuthenticationPrincipal Principal principal) {
+        productService.addAnnotationToVideo(videoId, principal.getName(), annotationCreateDto.getAnnotation());
+    }
+
+    @Override
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.GET)
+    public List<ManualAnnotationDto> listAnnotationsForManual(@PathVariable("manualId") Long manualId,
+                                                              @AuthenticationPrincipal Principal principal) {
+        return productService.listAnnotationsForManual(manualId, principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
+    public List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
+                                                            @AuthenticationPrincipal Principal principal) {
+        return productService.listAnnotationsForVideo(videoId, principal.getName());
     }
 
     @ExceptionHandler
@@ -175,6 +203,11 @@ public class ProductControllerImpl implements ProductController {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(ProductException e) {
         return ValidationErrorBuilder.fromException(e);
+    }
+
+    private String getConsumerEmail(Principal principal, Authentication authentication) {
+        return principal == null || !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) ?
+                null : principal.getName();
     }
 
 }

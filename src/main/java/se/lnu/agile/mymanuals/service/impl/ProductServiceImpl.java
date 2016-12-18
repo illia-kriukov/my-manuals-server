@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import se.lnu.agile.mymanuals.converter.*;
 import se.lnu.agile.mymanuals.dao.*;
+import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
+import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
@@ -48,10 +50,19 @@ public class ProductServiceImpl implements ProductService {
     private ManualDao manualDao;
 
     @Autowired
+    private VideoDao videoDao;
+
+    @Autowired
     private SubscriptionDao subscriptionDao;
 
     @Autowired
     private ConsumerSubscriptionDao consumerSubscriptionDao;
+
+    @Autowired
+    private ManualAnnotationDao manualAnnotationDao;
+
+    @Autowired
+    private VideoAnnotationDao videoAnnotationDao;
 
     @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
@@ -67,6 +78,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private SubscriptionToSubscriptionDto subscriptionConverter;
+
+    @Autowired
+    private ManualAnnotationListToManualAnnotationDtoList manualAnnotationConverter;
+
+    @Autowired
+    private VideoAnnotationListToVideoAnnotationDtoList videoAnnotationConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -244,6 +261,41 @@ public class ProductServiceImpl implements ProductService {
                 .stream().map(cs -> cs.getSubscription().getId()).collect(Collectors.toList());
     }
 
+    @Override
+    public void addAnnotationToManual(Long manualId, String consumerEmail, String annotation) {
+        Manual manual = manualDao.findOne(manualId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        validateManualAnnotation(manual, consumer);
+        ManualAnnotation manualAnnotation = new ManualAnnotation(manual, consumer, annotation);
+        manualAnnotationDao.save(manualAnnotation);
+    }
+
+    @Override
+    public void addAnnotationToVideo(Long videoId, String consumerEmail, String annotation) {
+        Video video = videoDao.findOne(videoId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        validateVideoAnnotation(video, consumer);
+        VideoAnnotation videoAnnotation = new VideoAnnotation(video, consumer, annotation);
+        videoAnnotationDao.save(videoAnnotation);
+
+    }
+
+    @Override
+    public List<ManualAnnotationDto> listAnnotationsForManual(Long manualId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        List<ManualAnnotation> manualAnnotationList = manualAnnotationDao
+                .findByManual_idAndConsumer_id(manualId, consumer.getId());
+        return manualAnnotationList == null ? null : manualAnnotationConverter.apply(manualAnnotationList);
+    }
+
+    @Override
+    public List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        List<VideoAnnotation> videoAnnotationList =
+                videoAnnotationDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
+        return videoAnnotationList == null ? null : videoAnnotationConverter.apply(videoAnnotationList);
+    }
+
     /**
      * List with all products of the company.
      *
@@ -394,6 +446,38 @@ public class ProductServiceImpl implements ProductService {
             throw  new ProductException("User is not subscribed for this type of subscription and product");
         }
         return true;
+    }
+
+    /**
+     * Perform validation of the new manual annotation.
+     *
+     * Checks:
+     * -> Consumer and Manual exist in the database
+     */
+    private void validateManualAnnotation(Manual manual, Consumer consumer) {
+        if (consumer == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
+            throw new ProductException(msg);
+        } else if (manual == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown manual id). Please, try again.";
+            throw new ProductException(msg);
+        }
+    }
+
+    /**
+     * Perform validation of the new video annotation.
+     *
+     * Checks:
+     * -> Consumer and Video exist in the database
+     */
+    private void validateVideoAnnotation(Video video, Consumer consumer) {
+        if (consumer == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
+            throw new ProductException(msg);
+        } else if (video == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown video id). Please, try again.";
+            throw new ProductException(msg);
+        }
     }
 
 }

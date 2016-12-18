@@ -1,5 +1,7 @@
 package se.lnu.agile.mymanuals.service;
 
+import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
+import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
@@ -42,5 +44,13 @@ public interface ProductService {
     List<SubscriptionDto> listSubscriptions();
 
     List<Long> listConsumerSubscriptions(Long productId, String consumerEmail);
+
+    void addAnnotationToManual(Long manualId, String consumerEmail, String annotation);
+
+    void addAnnotationToVideo(Long videoId, String consumerEmail, String annotation);
+
+    List<ManualAnnotationDto> listAnnotationsForManual(Long manualId, String consumerEmail);
+
+    List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail);
 
 }

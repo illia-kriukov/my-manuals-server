@@ -5,6 +5,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import se.lnu.agile.mymanuals.dto.annotation.AnnotationCreateDto;
+import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
+import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
@@ -82,5 +85,23 @@ public interface ProductController {
     @RequestMapping(value = "/consumer/product/{productId}/subscriptions", method = RequestMethod.GET)
     List<Long> listConsumerSubscriptions(@PathVariable("productId") Long productId,
                                          @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    void addAnnotationToManual(@PathVariable("manualId") Long manualId,
+                               @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
+                               @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    void addAnnotationToVideo(@PathVariable("videoId") Long videoId,
+                              @RequestBody @Valid AnnotationCreateDto annotationCreateDto,
+                              @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/manual/{manualId}/annotation", method=RequestMethod.GET)
+    List<ManualAnnotationDto> listAnnotationsForManual(@PathVariable("manualId") Long manualId,
+                                                       @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
+    List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
+                                                     @AuthenticationPrincipal Principal principal);
 
 }
