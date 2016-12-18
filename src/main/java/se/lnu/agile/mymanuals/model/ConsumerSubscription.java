@@ -24,6 +24,15 @@ public class ConsumerSubscription {
     @JoinColumn(name = "subscription.id")
     private Subscription subscription;
 
+    public ConsumerSubscription() {
+    }
+
+    public ConsumerSubscription(Consumer consumer, Product product, Subscription subscription) {
+        this.consumer = consumer;
+        this.product = product;
+        this.subscription = subscription;
+    }
+
     public Long getId() {
         return id;
     }

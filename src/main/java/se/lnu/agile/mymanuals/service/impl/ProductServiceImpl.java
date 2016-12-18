@@ -14,12 +14,14 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
 import se.lnu.agile.mymanuals.service.ProductService;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +53,12 @@ public class ProductServiceImpl implements ProductService {
     private VideoDao videoDao;
 
     @Autowired
+    private SubscriptionDao subscriptionDao;
+
+    @Autowired
+    private ConsumerSubscriptionDao consumerSubscriptionDao;
+
+    @Autowired
     private ManualAnnotationDao manualAnnotationDao;
 
     @Autowired
@@ -67,6 +75,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ManualToManualDto manualConverter;
+
+    @Autowired
+    private SubscriptionToSubscriptionDto subscriptionConverter;
 
     @Autowired
     private ManualAnnotationListToManualAnnotationDtoList manualAnnotationConverter;
@@ -125,7 +136,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count) {
+    public List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count, String consumerEmail) {
         List<Product> productList;
 
         if (validateCategoryByIds(categoryIds)) {
@@ -143,11 +154,11 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productList == null ? null :
-                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+                checkStoredProductList(productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList()), consumerEmail);
     }
 
     @Override
-    public List<ProductListDto> searchProducts(String query, Integer page, Integer count) {
+    public List<ProductListDto> searchProducts(String query, Integer page, Integer count, String consumerEmail) {
         List<Product> productList;
 
         if (query != null) {
@@ -165,7 +176,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productList == null ? null :
-                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+                checkStoredProductList(productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList()), consumerEmail);
     }
 
     @Override
@@ -186,22 +197,68 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProduct(Long productId){
+    public ProductDto getProduct(Long productId, String consumerEmail) {
         Product product = productDao.findOne(productId);
-        return product == null ? null : productConverter.apply(product);
+        return product == null ? null : checkStoredProduct(productConverter.apply(product), consumerEmail);
     }
 
     @Override
     public List<ProductListDto> listConsumerProducts(String consumerEmail) {
+        List<ProductListDto> result = null;
         List<Product> productList = consumerDao.findByEmail(consumerEmail).getProduct();
-        return productList == null ? null :
-                productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+        if (productList != null) {
+            result = productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+            result.stream().forEach(p -> p.setStored(true));
+        }
+        return result;
     }
 
     @Override
     public ManualDto getManual(Long manualId) {
         Manual manual = manualDao.findOne(manualId);
         return manual == null ? null : manualConverter.apply(manual);
+    }
+
+    @Override
+    public void subscribe(Long productId, Long subscriptionId, String consumerEmail) {
+        Product product = productDao.findOne(productId);
+        Subscription subscription = subscriptionDao.findOne(subscriptionId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+
+        if (validateSubscription(product, subscription, consumer) && validateConsumerSubscription(product, subscription, consumer)) {
+            consumerSubscriptionDao.save(new ConsumerSubscription(consumer,product,subscription));
+        }
+    }
+
+    @Override
+    public void unsubscribe(Long productId, Long subscriptionId, String consumerEmail) {
+        Product product = productDao.findOne(productId);
+        Subscription subscription = subscriptionDao.findOne(subscriptionId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        ConsumerSubscription consumerSubscription = consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer, product, subscription);
+
+        if (validateSubscription(product, subscription, consumer) && validateConsumerSubscription(consumerSubscription)) {
+            consumerSubscriptionDao.delete(consumerSubscription);
+        }
+    }
+
+    @Override
+    public List<SubscriptionDto> listSubscriptions() {
+        List<Subscription> subscriptionList = subscriptionDao.findAll();
+        return subscriptionList == null ? null :
+                subscriptionList.stream().map(s -> subscriptionConverter.apply(s)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> listConsumerSubscriptions(Long productId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Product product = productDao.findOne(productId);
+
+        if (consumer == null) throw new ProductException("Consumer not existent");
+        if (product == null) throw new ProductException("Product not existent");
+
+        return consumerSubscriptionDao.findAllByConsumerAndProduct(consumer,product)
+                .stream().map(cs -> cs.getSubscription().getId()).collect(Collectors.toList());
     }
 
     @Override
@@ -251,6 +308,22 @@ public class ProductServiceImpl implements ProductService {
         List<Product> productList = productDao.findByCompanyId(representative.getCompany().getId());
         return productList == null ? null :
                 productList.stream().map(p -> productListConverter.apply(p)).collect(Collectors.toList());
+    }
+
+    private ProductDto checkStoredProduct(ProductDto productDto, String consumerEmail){
+        if (consumerEmail != null) {
+            List<ProductListDto> consumerProductList = listConsumerProducts(consumerEmail);
+            consumerProductList.stream().filter(p -> p.getId().equals(productDto.getId())).forEach(p -> productDto.setStored(true));
+        }
+        return productDto;
+    }
+
+    private List<ProductListDto> checkStoredProductList(List<ProductListDto> productList, String consumerEmail) {
+        if (consumerEmail != null) {
+            List<ProductListDto> consumerProductList = listConsumerProducts(consumerEmail);
+            productList.stream().filter(p -> consumerProductList.contains(p)).forEach(p -> p.setStored(true));
+        }
+        return productList;
     }
 
     /**
@@ -328,6 +401,49 @@ public class ProductServiceImpl implements ProductService {
         } else if (consumer.getProduct() != null && consumer.getProduct().contains(product)) {
             String msg = "This product is already in your favourites.";
             throw new ProductException(msg);
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data.
+     *
+     * Checks:
+     * -> Consumer, product and subscription exist in DB
+     */
+    private boolean validateSubscription(Product product, Subscription subscription, Consumer consumer) {
+        if (product == null) {
+            throw new ProductException("Unable to find this product in our DB");
+        } else if (subscription == null) {
+            throw new ProductException("This subscription type does not exist");
+        } else if (consumer == null) {
+            throw new ProductException("No such user exists");
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data at adding.
+     *
+     * Checks:
+     * -> Consumer are not subscribed for current subscription
+     */
+    private boolean validateConsumerSubscription(Product product, Subscription subscription, Consumer consumer) {
+        if (consumerSubscriptionDao.findByConsumerAndProductAndSubscription(consumer, product, subscription) != null) {
+            throw new ProductException("You are already subscribed for this type of subscription and product");
+        }
+        return true;
+    }
+
+    /**
+     * Perform validation of the subscription's data at deleting.
+     *
+     * Checks:
+     * -> Consumer are subscribed for current subscription
+     */
+    private boolean validateConsumerSubscription(ConsumerSubscription consumerSubscription) {
+        if (consumerSubscription == null) {
+            throw  new ProductException("User is not subscribed for this type of subscription and product");
         }
         return true;
     }

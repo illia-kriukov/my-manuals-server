@@ -4,7 +4,10 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
 import se.lnu.agile.mymanuals.exception.ProductException;
@@ -66,16 +70,20 @@ public class ProductControllerImpl implements ProductController {
     @RequestMapping(value="/products", method= RequestMethod.GET)
     public List<ProductListDto> listProducts(@RequestParam(value="categories", required = false) List<Long> categories,
                                              @RequestParam(value = "page", required = false) Integer page,
-                                             @RequestParam(value = "count", required = false) Integer count) {
-        return productService.listProducts(categories, page, count);
+                                             @RequestParam(value = "count", required = false) Integer count,
+                                             @AuthenticationPrincipal Principal principal,
+                                             Authentication authentication) {
+        return productService.listProducts(categories, page, count, getConsumerEmail(principal, authentication));
     }
 
     @Override
     @RequestMapping(value="/products/search", method= RequestMethod.GET)
     public List<ProductListDto> searchProducts(@RequestParam(value = "query") String query,
                                                @RequestParam(value = "page", required = false) Integer page,
-                                               @RequestParam(value = "count", required = false) Integer count) {
-        return productService.searchProducts(query, page, count);
+                                               @RequestParam(value = "count", required = false) Integer count,
+                                               @AuthenticationPrincipal Principal principal,
+                                               Authentication authentication) {
+        return productService.searchProducts(query, page, count, getConsumerEmail(principal, authentication));
     }
 
     @Override
@@ -84,9 +92,12 @@ public class ProductControllerImpl implements ProductController {
         productService.addToFavourites(productId, principal.getName());
     }
 
+    @Override
     @RequestMapping(value = "/product", method = RequestMethod.GET)
-    public ProductDto getProduct(@RequestParam(value = "productId") Long productId) {
-        return productService.getProduct(productId);
+    public ProductDto getProduct(@RequestParam(value = "productId") Long productId,
+                                 @AuthenticationPrincipal Principal principal,
+                                 Authentication authentication) {
+        return productService.getProduct(productId, getConsumerEmail(principal, authentication));
     }
 
     @Override
@@ -115,6 +126,29 @@ public class ProductControllerImpl implements ProductController {
                 throw new ProductException("Manual can't be downloaded.");
             }
         }
+    }
+
+    @Override
+    public void subscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                          @AuthenticationPrincipal Principal principal) {
+        productService.subscribe(productId, subscriptionId, principal.getName());
+    }
+
+    @Override
+    public void unsubscribe(@PathVariable("productId") Long productId, @PathVariable("subscriptionId") Long subscriptionId,
+                            @AuthenticationPrincipal Principal principal) {
+        productService.unsubscribe(productId, subscriptionId, principal.getName());
+    }
+
+    @Override
+    public List<SubscriptionDto> listSubscriptions() {
+        return productService.listSubscriptions();
+    }
+
+    @Override
+    public List<Long> listConsumerSubscriptions(@PathVariable("productId") Long productId,
+                                                @AuthenticationPrincipal Principal principal) {
+        return productService.listConsumerSubscriptions(productId, principal.getName());
     }
 
     @Override
@@ -169,6 +203,11 @@ public class ProductControllerImpl implements ProductController {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ValidationError handleException(ProductException e) {
         return ValidationErrorBuilder.fromException(e);
+    }
+
+    private String getConsumerEmail(Principal principal, Authentication authentication) {
+        return principal == null || !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) ?
+                null : principal.getName();
     }
 
 }

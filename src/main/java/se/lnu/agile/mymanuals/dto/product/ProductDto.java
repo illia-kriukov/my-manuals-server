@@ -25,6 +25,8 @@ public class ProductDto {
 
     private List<ManualInfoDto> manuals;
 
+    private Boolean stored = false;
+
     public Long getId() {
         return id;
     }
@@ -79,6 +81,14 @@ public class ProductDto {
 
     public void setManuals(List<ManualInfoDto> manuals) {
         this.manuals = manuals;
+    }
+
+    public Boolean getStored() {
+        return stored;
+    }
+
+    public void setStored(Boolean stored) {
+        this.stored = stored;
     }
 
 }
