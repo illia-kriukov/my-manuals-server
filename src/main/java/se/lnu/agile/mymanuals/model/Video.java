@@ -25,6 +25,14 @@ public class Video {
     public Video() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Product getProduct() {
         return product;
     }
