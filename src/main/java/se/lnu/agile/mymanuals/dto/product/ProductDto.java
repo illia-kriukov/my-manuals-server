@@ -3,6 +3,7 @@ package se.lnu.agile.mymanuals.dto.product;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.company.CompanyInfoDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualInfoDto;
+import se.lnu.agile.mymanuals.dto.video.VideoDto;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class ProductDto {
 
     private CompanyInfoDto company;
 
-    private List<String> videos;
+    private List<VideoDto> videos;
 
     private List<ManualInfoDto> manuals;
 
@@ -67,11 +68,11 @@ public class ProductDto {
         this.company = company;
     }
 
-    public List<String> getVideos() {
+    public List<VideoDto> getVideos() {
         return videos;
     }
 
-    public void setVideos(List<String> videos) {
+    public void setVideos(List<VideoDto> videos) {
         this.videos = videos;
     }
 
