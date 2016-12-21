@@ -183,11 +183,11 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    @RequestMapping(value="/product/{id}/comment", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addComment(@PathVariable("id") Long productId,
+    @RequestMapping(value = "/product/{productId}/comment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addCommentToProduct(@PathVariable("productId") Long productId,
                            @RequestBody @Valid CommentCreateDto commentCreateDto,
                            @AuthenticationPrincipal Principal principal) {
-        productService.addComment(productId, /*principal.getName()*/ "test100@test.com" , commentCreateDto.getComment());
+        productService.addCommentToProduct(productId, principal.getName(), commentCreateDto.getComment());
     }
 
     @ExceptionHandler

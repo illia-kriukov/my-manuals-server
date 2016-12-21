@@ -546,3 +546,43 @@ databaseChangeLog:
               onUpdate: RESTRICT
               referencedColumnNames: id
               referencedTableName: consumer
+  - changeSet:
+        id: 24
+        author: illia.kriukov
+        changes:
+          - createTable:
+              tableName: product_comment
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: user_email
+                    type: text
+                    constraints:
+                      nullable: false
+                - column:
+                    name: product_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_pcomm_product_id
+                      reference: product(id)
+                - column:
+                    name: comment
+                    type: text
+                    constraints:
+                      nullable: false
+          - addForeignKeyConstraint:
+              baseColumnNames: product_id
+              baseTableName: product_comment
+              constraintName: fk_pcomm_product_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: product

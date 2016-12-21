@@ -53,6 +53,6 @@ public interface ProductService {
 
     List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail);
 
-    void addComment(Long productId, String consumerEmail, String comment);
+    void addCommentToProduct(Long productId, String userEmail, String comment);
 
 }

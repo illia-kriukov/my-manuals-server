@@ -105,8 +105,8 @@ public interface ProductController {
     List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
                                                      @AuthenticationPrincipal Principal principal);
 
-    @RequestMapping(value="/product/{id}/comment", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    void addComment(@PathVariable("id") Long productId,
+    @RequestMapping(value = "/product/{productId}/comment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    void addCommentToProduct(@PathVariable("productId") Long productId,
                     @RequestBody @Valid CommentCreateDto commentCreateDto,
                     @AuthenticationPrincipal Principal principal);
 

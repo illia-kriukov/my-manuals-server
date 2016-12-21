@@ -21,7 +21,6 @@ import se.lnu.agile.mymanuals.service.ProductService;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     private VideoAnnotationDao videoAnnotationDao;
 
     @Autowired
-    private CommentDao commentDao;
+    private ProductCommentDao productCommentDao;
 
     @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
@@ -300,16 +299,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void addComment(Long productId, String consumerEmail, String comment) {
+    public void addCommentToProduct(Long productId, String userEmail, String comment) {
         Product product = productDao.findOne(productId);
-        Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        Representative representative = representativeDao.findByEmail(consumerEmail);
-        if(consumer == null && representative == null ){
-            String msg = "There is no such user";
-            throw new ProductException(msg);
-        }
-        Comment comments = new Comment(consumerEmail, product, comment);
-        commentDao.save(comments);
+        validateComment(consumerDao.findByEmail(userEmail), representativeDao.findByEmail(userEmail), product);
+        productCommentDao.save(new ProductComment(userEmail, product, comment));
     }
 
     /**
@@ -493,6 +486,20 @@ public class ProductServiceImpl implements ProductService {
         } else if (video == null) {
             String msg = "Something went wrong during adding your annotation (Unknown video id). Please, try again.";
             throw new ProductException(msg);
+        }
+    }
+
+    /**
+     * Perform validation of the new comment.
+     *
+     * Checks:
+     * -> User and Product exist in the database
+     */
+    private void validateComment(Consumer consumer, Representative representative, Product product) {
+        if (consumer == null && representative == null ) {
+            throw new ProductException("There is no such user in our DB.");
+        } else if (product == null) {
+            throw new ProductException("There is no such product in our DB.");
         }
     }
 
