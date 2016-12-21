@@ -65,6 +65,9 @@ public class ProductServiceImpl implements ProductService {
     private VideoAnnotationDao videoAnnotationDao;
 
     @Autowired
+    private CommentDao commentDao;
+
+    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
@@ -294,6 +297,19 @@ public class ProductServiceImpl implements ProductService {
         List<VideoAnnotation> videoAnnotationList =
                 videoAnnotationDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
         return videoAnnotationList == null ? null : videoAnnotationConverter.apply(videoAnnotationList);
+    }
+
+    @Override
+    public void addComment(Long productId, String consumerEmail, String comment) {
+        Product product = productDao.findOne(productId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        Representative representative = representativeDao.findByEmail(consumerEmail);
+        if(consumer == null && representative == null ){
+            String msg = "There is no such user";
+            throw new ProductException(msg);
+        }
+        Comment comments = new Comment(consumerEmail, product, comment);
+        commentDao.save(comments);
     }
 
     /**

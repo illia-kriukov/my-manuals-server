@@ -10,6 +10,7 @@ import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
 import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
@@ -103,5 +104,10 @@ public interface ProductController {
     @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
     List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
                                                      @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/product/{id}/comment", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    void addComment(@PathVariable("id") Long productId,
+                    @RequestBody @Valid CommentCreateDto commentCreateDto,
+                    @AuthenticationPrincipal Principal principal);
 
 }
