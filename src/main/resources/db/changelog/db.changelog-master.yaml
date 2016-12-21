@@ -546,3 +546,101 @@ databaseChangeLog:
               onUpdate: RESTRICT
               referencedColumnNames: id
               referencedTableName: consumer
+  - changeSet:
+        id: 24
+        author: daniel.paque
+        changes:
+          - createTable:
+              tableName: manual_rating
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: manual_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_mrat_manual_id
+                      reference: manual(id)
+                - column:
+                    name: consumer_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_mrat_consumer_id
+                      reference: consumer(id)
+                - column:
+                    name: rating
+                    type: int
+                    constraints:
+                      nullable: false
+          - addForeignKeyConstraint:
+              baseColumnNames: manual_id
+              baseTableName: manual_rating
+              constraintName: fk_mrat_manual_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: manual
+          - addForeignKeyConstraint:
+              baseColumnNames: consumer_id
+              baseTableName: manual_rating
+              constraintName: fk_mrat_consumer_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: consumer
+          - createTable:
+              tableName: video_rating
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
+                    name: video_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_vrat_manual_id
+                      reference: video(id)
+                - column:
+                    name: consumer_id
+                    type: int
+                    constraints:
+                      nullable: false
+                      foreignKey: true
+                      foreignKeyName: fk_vrat_consumer_id
+                      reference: consumer(id)
+                - column:
+                    name: rating
+                    type: int
+                    constraints:
+                      nullable: false
+          - addForeignKeyConstraint:
+              baseColumnNames: video_id
+              baseTableName: video_rating
+              constraintName: fk_vrat_manual_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: video
+          - addForeignKeyConstraint:
+              baseColumnNames: consumer_id
+              baseTableName: video_rating
+              constraintName: fk_vrat_consumer_id
+              onDelete: CASCADE
+              onUpdate: RESTRICT
+              referencedColumnNames: id
+              referencedTableName: consumer

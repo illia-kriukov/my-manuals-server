@@ -13,6 +13,7 @@ import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import javax.servlet.http.HttpServletResponse;
@@ -103,5 +104,25 @@ public interface ProductController {
     @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
     List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
                                                      @AuthenticationPrincipal Principal principal);
+
+    //TODO---------------- new stuff ------------------
+
+    @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.POST)
+    void createRatingForManual(@PathVariable("manualId") Long manualId,
+                           @RequestParam(value = "rating") int rating,
+                           @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.POST)
+    void createRatingForVideo(@PathVariable("videoId") Long videoId,
+                          @RequestParam(value = "rating") int rating,
+                          @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.GET)
+    RatingDto getMyRatingForManual(@PathVariable("manualId") Long manualId,
+                                   @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.GET)
+    RatingDto getMyRatingForVideo(@PathVariable("videoId") Long videoId,
+                                  @AuthenticationPrincipal Principal principal);
 
 }

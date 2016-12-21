@@ -14,6 +14,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
@@ -21,7 +22,6 @@ import se.lnu.agile.mymanuals.service.ProductService;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +65,12 @@ public class ProductServiceImpl implements ProductService {
     private VideoAnnotationDao videoAnnotationDao;
 
     @Autowired
+    private ManualRatingDao manualRatingDao;
+
+    @Autowired
+    private VideoRatingDao videoRatingDao;
+
+    @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
 
     @Autowired
@@ -84,6 +90,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private VideoAnnotationListToVideoAnnotationDtoList videoAnnotationConverter;
+
+    @Autowired
+    private ManualRatingToRatingDto manualRatingConverter;
+
+    @Autowired
+    private VideoRatingToRatingDto videoRatingConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -265,7 +277,8 @@ public class ProductServiceImpl implements ProductService {
     public void addAnnotationToManual(Long manualId, String consumerEmail, String annotation) {
         Manual manual = manualDao.findOne(manualId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        validateManualAnnotation(manual, consumer);
+        checkManualNotNull(manual);
+        checkConsumerNotNull(consumer);
         ManualAnnotation manualAnnotation = new ManualAnnotation(manual, consumer, annotation);
         manualAnnotationDao.save(manualAnnotation);
     }
@@ -274,7 +287,8 @@ public class ProductServiceImpl implements ProductService {
     public void addAnnotationToVideo(Long videoId, String consumerEmail, String annotation) {
         Video video = videoDao.findOne(videoId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        validateVideoAnnotation(video, consumer);
+        checkConsumerNotNull(consumer);
+        checkVideoNotNull(video);
         VideoAnnotation videoAnnotation = new VideoAnnotation(video, consumer, annotation);
         videoAnnotationDao.save(videoAnnotation);
 
@@ -295,6 +309,43 @@ public class ProductServiceImpl implements ProductService {
                 videoAnnotationDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
         return videoAnnotationList == null ? null : videoAnnotationConverter.apply(videoAnnotationList);
     }
+
+
+    //TODO ------------------------------- new stuff ---------------------------------------
+
+    @Override
+    public void createRatingForManual(Long manualId, String consumerEmail, int rating) {
+        Manual manual = manualDao.findOne(manualId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        validateRatingForManual(manual, consumer, rating);
+        ManualRating manualRating = new ManualRating(manual, consumer, rating);
+        manualRatingDao.save(manualRating);
+    }
+
+    @Override
+    public void createRatingForVideo(Long videoId, String consumerEmail, int rating) {
+        Video video = videoDao.findOne(videoId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        validateRatingForVideo(video, consumer, rating);
+        VideoRating videoRating = new VideoRating(video, consumer, rating);
+        videoRatingDao.save(videoRating);
+    }
+
+    @Override
+    public RatingDto getMyRatingForManual(Long manualId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        ManualRating manualRating = manualRatingDao.findByManual_idAndConsumer_id(manualId, consumer.getId());
+        return manualRating == null ? null : manualRatingConverter.apply(manualRating);
+    }
+
+    @Override
+    public RatingDto getMyRatingForVideo(Long manualId, String consumerEmail) {
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        VideoRating videoRating = videoRatingDao.findByVideo_idAndConsumer_id(manualId, consumer.getId());
+        return videoRating == null ? null : videoRatingConverter.apply(videoRating);
+    }
+
+    // ------------------------------------------------------------------------------------
 
     /**
      * List with all products of the company.
@@ -346,7 +397,7 @@ public class ProductServiceImpl implements ProductService {
      * Check:
      * -> Categories exist in the category table
      */
-    public boolean validateCategoryByIds(List<Long> categoryIds) {
+    private boolean validateCategoryByIds(List<Long> categoryIds) {
         return (categoryIds != null && categoryIds.size() == categoryDao.findAll(categoryIds).size());
     }
 
@@ -449,33 +500,61 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Perform validation of the new manual annotation.
-     *
      * Checks:
-     * -> Consumer and Manual exist in the database
+     * -> Manual exists in the database
      */
-    private void validateManualAnnotation(Manual manual, Consumer consumer) {
-        if (consumer == null) {
-            String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
-            throw new ProductException(msg);
-        } else if (manual == null) {
+    private void checkManualNotNull(Manual manual) {
+        if (manual == null) {
             String msg = "Something went wrong during adding your annotation (Unknown manual id). Please, try again.";
             throw new ProductException(msg);
         }
     }
 
     /**
-     * Perform validation of the new video annotation.
-     *
      * Checks:
-     * -> Consumer and Video exist in the database
+     * -> Video exists in the database
      */
-    private void validateVideoAnnotation(Video video, Consumer consumer) {
+    private void checkVideoNotNull(Video video) {
+        if (video == null) {
+            String msg = "Something went wrong during adding your annotation (Unknown video id). Please, try again.";
+            throw new ProductException(msg);
+        }
+    }
+
+    /**
+     * Checks:
+     * -> Consumer exist in the database
+     */
+    private void checkConsumerNotNull(Consumer consumer) {
         if (consumer == null) {
             String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
             throw new ProductException(msg);
-        } else if (video == null) {
-            String msg = "Something went wrong during adding your annotation (Unknown video id). Please, try again.";
+        }
+    }
+
+    private void checkRating(int rating){
+        if (rating < 1 || rating > 5){
+            String msg = "Wrong rating format. Choose an integer between 1 and 5";
+            throw new ProductException(msg);
+        }
+    }
+
+    private void validateRatingForManual(Manual manual, Consumer consumer, int rating){
+        checkManualNotNull(manual);
+        checkConsumerNotNull(consumer);
+        checkRating(rating);
+        if(manualRatingDao.findByManual_idAndConsumer_id(manual.getId(), consumer.getId()) != null){
+            String msg = "You rated already this manual";
+            throw new ProductException(msg);
+        }
+    }
+
+    private void validateRatingForVideo(Video video, Consumer consumer, int rating){
+        checkVideoNotNull(video);
+        checkConsumerNotNull(consumer);
+        checkRating(rating);
+        if(videoRatingDao.findByVideo_idAndConsumer_id(video.getId(), consumer.getId()) != null){
+            String msg = "You rated already this video";
             throw new ProductException(msg);
         }
     }

@@ -8,6 +8,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import java.util.List;
@@ -52,5 +53,14 @@ public interface ProductService {
     List<ManualAnnotationDto> listAnnotationsForManual(Long manualId, String consumerEmail);
 
     List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail);
+
+    void createRatingForManual(Long manualId, String consumerEmail, int rating);
+
+    void createRatingForVideo(Long videoId, String consumerEmail, int rating);
+
+    RatingDto getMyRatingForManual(Long manualId, String consumerEmail);
+
+    RatingDto getMyRatingForVideo(Long manualId, String consumerEmail);
+
 
 }
