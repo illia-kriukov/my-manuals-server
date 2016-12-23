@@ -13,6 +13,7 @@ import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +23,8 @@ import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * Created by ilyakruikov on 11/11/16.
@@ -103,5 +106,7 @@ public interface ProductController {
     @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
     List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
                                                      @AuthenticationPrincipal Principal principal);
-
+    @RequestMapping(value="/product/update", method=RequestMethod.POST)
+    @ResponseStatus(value= HttpStatus.OK)
+    void updateProduct( @Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal);
 }

@@ -1,5 +1,6 @@
 package se.lnu.agile.mymanuals.service.impl;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
@@ -294,6 +296,42 @@ public class ProductServiceImpl implements ProductService {
         List<VideoAnnotation> videoAnnotationList =
                 videoAnnotationDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
         return videoAnnotationList == null ? null : videoAnnotationConverter.apply(videoAnnotationList);
+    }
+
+    @Override
+    public void updateProduct(ProductUpdateDto productUpdateDto, String name) {
+        Product product= productDao.findOne(productUpdateDto.getId());
+        if (product != null) ;//productDao.delete(product);
+        else product=new Product();
+        List<Manual> manuals=product.getManual();
+        if (manuals!=null) {
+            if (productUpdateDto.getRemovedManuals()!=null) {
+                for (Long id : productUpdateDto.getRemovedManuals()){
+                    for (Manual m : manuals){
+                        if (id==m.getId()){
+                            manuals.remove(m);
+                        }
+                    }
+                }
+            }
+        }
+        if (productUpdateDto.getFile()!=null){
+            List<MultipartFile> files= productUpdateDto.getFile();
+               addManuals(files,product,manuals);
+        }
+        product.setName(productUpdateDto.getName());
+        product.setModel(productUpdateDto.getModel());
+        product.setCompany(representativeDao.findByEmail(name).getCompany());
+        product.setCategory(categoryDao.findAll(productUpdateDto.getCategory()));
+        product.setManual(manuals);
+        List<Video> videos=new ArrayList<>();
+        for (String link : productUpdateDto.getVideo()){
+            Video v= new Video(link);
+            v.setProduct(product);
+            videos.add(v);
+        }
+        product.setVideo(videos);
+        productDao.save(product);
     }
 
     /**
