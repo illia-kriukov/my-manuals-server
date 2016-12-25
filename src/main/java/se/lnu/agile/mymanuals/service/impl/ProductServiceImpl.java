@@ -15,7 +15,6 @@ import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
-import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
@@ -91,12 +90,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private VideoAnnotationListToVideoAnnotationDtoList videoAnnotationConverter;
-
-    @Autowired
-    private ManualRatingToRatingDto manualRatingConverter;
-
-    @Autowired
-    private VideoRatingToRatingDto videoRatingConverter;
 
     @Autowired
     private AvgRatingToAvgRatingDto avgRatingConverter;
@@ -314,9 +307,6 @@ public class ProductServiceImpl implements ProductService {
         return videoAnnotationList == null ? null : videoAnnotationConverter.apply(videoAnnotationList);
     }
 
-
-    //TODO ------------------------------- new stuff ---------------------------------------
-
     @Override
     public void createRatingForManual(Long manualId, String consumerEmail, int rating) {
         Manual manual = manualDao.findOne(manualId);
@@ -356,17 +346,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public RatingDto getMyRatingForManual(Long manualId, String consumerEmail) {
+    public Integer getMyRatingForManual(Long manualId, String consumerEmail) {
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        checkManualNotNull(manualDao.findOne(manualId));
         ManualRating manualRating = manualRatingDao.findByManual_idAndConsumer_id(manualId, consumer.getId());
-        return manualRating == null ? null : manualRatingConverter.apply(manualRating);
+        return manualRating == null ? null : manualRating.getRating();
     }
 
     @Override
-    public RatingDto getMyRatingForVideo(Long videoId, String consumerEmail) {
+    public Integer getMyRatingForVideo(Long videoId, String consumerEmail) {
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        checkVideoNotNull(videoDao.findOne(videoId));
         VideoRating videoRating = videoRatingDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
-        return videoRating == null ? null : videoRatingConverter.apply(videoRating);
+        return videoRating == null ? null : videoRating.getRating();
     }
 
     @Override
@@ -384,8 +376,6 @@ public class ProductServiceImpl implements ProductService {
         AvgRating avgRating = videoRatingDao.getAvgRatingAndRatingCount(videoId);
         return avgRating == null ? null : avgRatingConverter.apply(avgRating);
     }
-
-    // ------------------------------------------------------------------------------------
 
     /**
      * List with all products of the company.

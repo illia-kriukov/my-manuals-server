@@ -9,7 +9,6 @@ import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
-import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import java.util.List;
@@ -63,9 +62,9 @@ public interface ProductService {
 
     void updateRatingForVideo(Long videoId, String consumerEmail, int rating);
 
-    RatingDto getMyRatingForManual(Long manualId, String consumerEmail);
+    Integer getMyRatingForManual(Long manualId, String consumerEmail);
 
-    RatingDto getMyRatingForVideo(Long manualId, String consumerEmail);
+    Integer getMyRatingForVideo(Long manualId, String consumerEmail);
 
     AvgRatingDto getAvgRatingForManual(Long manualId);
 

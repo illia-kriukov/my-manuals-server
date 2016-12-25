@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.BindException;
@@ -22,7 +21,6 @@ import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
-import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
@@ -183,9 +181,6 @@ public class ProductControllerImpl implements ProductController {
         return productService.listAnnotationsForVideo(videoId, principal.getName());
     }
 
-
-    //TODO ------------------ new stuff ---------------------------
-
     @Override
     @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.POST)
     public void createRatingForManual(@PathVariable("manualId") Long manualId,
@@ -221,14 +216,14 @@ public class ProductControllerImpl implements ProductController {
 
     @Override
     @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.GET)
-    public RatingDto getMyRatingForManual(@PathVariable("manualId") Long manualId,
+    public Integer getMyRatingForManual(@PathVariable("manualId") Long manualId,
                                     @AuthenticationPrincipal Principal principal) {
         return productService.getMyRatingForManual(manualId, principal.getName());
     }
 
     @Override
     @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.GET)
-    public RatingDto getMyRatingForVideo(@PathVariable("videoId") Long videoId,
+    public Integer getMyRatingForVideo(@PathVariable("videoId") Long videoId,
                                          @AuthenticationPrincipal Principal principal) {
         return productService.getMyRatingForVideo(videoId, principal.getName());
     }
@@ -244,8 +239,6 @@ public class ProductControllerImpl implements ProductController {
     public AvgRatingDto getAvgRatingForVideo(@PathVariable("videoId") Long videoId) {
         return productService.getAvgRatingForVideo(videoId);
     }
-
-    // ------------------------------------------------------------
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
