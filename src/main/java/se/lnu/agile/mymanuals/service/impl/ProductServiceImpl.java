@@ -14,6 +14,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
 import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
@@ -96,6 +97,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private VideoRatingToRatingDto videoRatingConverter;
+
+    @Autowired
+    private AvgRatingToAvgRatingDto avgRatingConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -317,7 +321,7 @@ public class ProductServiceImpl implements ProductService {
     public void createRatingForManual(Long manualId, String consumerEmail, int rating) {
         Manual manual = manualDao.findOne(manualId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        validateRatingForManual(manual, consumer, rating);
+        validateNewRatingForManual(manual, consumer, rating);
         ManualRating manualRating = new ManualRating(manual, consumer, rating);
         manualRatingDao.save(manualRating);
     }
@@ -326,8 +330,28 @@ public class ProductServiceImpl implements ProductService {
     public void createRatingForVideo(Long videoId, String consumerEmail, int rating) {
         Video video = videoDao.findOne(videoId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        validateRatingForVideo(video, consumer, rating);
+        validateNewRatingForVideo(video, consumer, rating);
         VideoRating videoRating = new VideoRating(video, consumer, rating);
+        videoRatingDao.save(videoRating);
+    }
+
+    @Override
+    public void updateRatingForManual(Long manualId, String consumerEmail, int newRating) {
+        Manual manual = manualDao.findOne(manualId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        validateUpdateRatingForManual(manual, consumer, newRating);
+        ManualRating manualRating = manualRatingDao.findByManual_idAndConsumer_id(manualId, consumer.getId());
+        manualRating.setRating(newRating);
+        manualRatingDao.save(manualRating);
+    }
+
+    @Override
+    public void updateRatingForVideo(Long videoId, String consumerEmail, int newRating) {
+        Video video = videoDao.findOne(videoId);
+        Consumer consumer = consumerDao.findByEmail(consumerEmail);
+        validateUpdateRatingForVideo(video, consumer, newRating);
+        VideoRating videoRating = videoRatingDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
+        videoRating.setRating(newRating);
         videoRatingDao.save(videoRating);
     }
 
@@ -339,10 +363,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public RatingDto getMyRatingForVideo(Long manualId, String consumerEmail) {
+    public RatingDto getMyRatingForVideo(Long videoId, String consumerEmail) {
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        VideoRating videoRating = videoRatingDao.findByVideo_idAndConsumer_id(manualId, consumer.getId());
+        VideoRating videoRating = videoRatingDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
         return videoRating == null ? null : videoRatingConverter.apply(videoRating);
+    }
+
+    @Override
+    public AvgRatingDto getAvgRatingForManual(Long manualId) {
+        //Check that there exist a manual for the given id
+        checkManualNotNull(manualDao.findOne(manualId));
+        AvgRating avgRating =  manualRatingDao.getAvgRatingAndRatingCount(manualId);
+        return avgRating == null ? null : avgRatingConverter.apply(avgRating);
+    }
+
+    @Override
+    public AvgRatingDto getAvgRatingForVideo(Long videoId) {
+        //Check that there exist a video for the given id
+        checkVideoNotNull(videoDao.findOne(videoId));
+        AvgRating avgRating = videoRatingDao.getAvgRatingAndRatingCount(videoId);
+        return avgRating == null ? null : avgRatingConverter.apply(avgRating);
     }
 
     // ------------------------------------------------------------------------------------
@@ -505,7 +545,7 @@ public class ProductServiceImpl implements ProductService {
      */
     private void checkManualNotNull(Manual manual) {
         if (manual == null) {
-            String msg = "Something went wrong during adding your annotation (Unknown manual id). Please, try again.";
+            String msg = "Unknown manual id. Please, try again.";
             throw new ProductException(msg);
         }
     }
@@ -516,7 +556,7 @@ public class ProductServiceImpl implements ProductService {
      */
     private void checkVideoNotNull(Video video) {
         if (video == null) {
-            String msg = "Something went wrong during adding your annotation (Unknown video id). Please, try again.";
+            String msg = "Unknown video id. Please, try again.";
             throw new ProductException(msg);
         }
     }
@@ -527,11 +567,14 @@ public class ProductServiceImpl implements ProductService {
      */
     private void checkConsumerNotNull(Consumer consumer) {
         if (consumer == null) {
-            String msg = "Something went wrong during adding your annotation (Unknown user account). Please, try again.";
+            String msg = "Unknown user account. Please, try again.";
             throw new ProductException(msg);
         }
     }
 
+    /**
+     * Checks the range of the rating
+     */
     private void checkRating(int rating){
         if (rating < 1 || rating > 5){
             String msg = "Wrong rating format. Choose an integer between 1 and 5";
@@ -539,22 +582,68 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    private void validateRatingForManual(Manual manual, Consumer consumer, int rating){
+    /**
+     * Checks
+     * - manual not null
+     * - consumer not null
+     * - check rating (in correct range)
+     * - check that the manual is not yet rated by this user
+     */
+    private void validateNewRatingForManual(Manual manual, Consumer consumer, int rating){
         checkManualNotNull(manual);
         checkConsumerNotNull(consumer);
         checkRating(rating);
         if(manualRatingDao.findByManual_idAndConsumer_id(manual.getId(), consumer.getId()) != null){
-            String msg = "You rated already this manual";
+            String msg = "You rated already this manual.";
             throw new ProductException(msg);
         }
     }
 
-    private void validateRatingForVideo(Video video, Consumer consumer, int rating){
+    /**
+     * Checks
+     * - video not null
+     * - consumer not null
+     * - check rating (in correct range)
+     * - check that the video is not yet rated by this user
+     */
+    private void validateNewRatingForVideo(Video video, Consumer consumer, int rating){
         checkVideoNotNull(video);
         checkConsumerNotNull(consumer);
         checkRating(rating);
         if(videoRatingDao.findByVideo_idAndConsumer_id(video.getId(), consumer.getId()) != null){
-            String msg = "You rated already this video";
+            String msg = "You rated already this video.";
+            throw new ProductException(msg);
+        }
+    }
+
+    /**
+     * Checks
+     * - manual not null
+     * - consumer not null
+     * - that there exists already a rating for this manual for this consumer
+     */
+    private void validateUpdateRatingForManual(Manual manual, Consumer consumer, int rating) {
+        checkManualNotNull(manual);
+        checkConsumerNotNull(consumer);
+        checkRating(rating);
+        if(manualRatingDao.findByManual_idAndConsumer_id(manual.getId(), consumer.getId()) == null){
+            String msg = "Could not update rating. No rating available for this manual.";
+            throw new ProductException(msg);
+        }
+    }
+
+    /**
+     * Checks
+     * - video not null
+     * - consumer not null
+     * - that there exists already a rating for this video for this consumer
+     */
+    private void validateUpdateRatingForVideo(Video video, Consumer consumer, int rating) {
+        checkVideoNotNull(video);
+        checkConsumerNotNull(consumer);
+        checkRating(rating);
+        if(videoRatingDao.findByVideo_idAndConsumer_id(video.getId(), consumer.getId()) == null) {
+            String msg = "Could not update rating. No rating available for this video.";
             throw new ProductException(msg);
         }
     }

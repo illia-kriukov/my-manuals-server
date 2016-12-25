@@ -21,6 +21,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
 import se.lnu.agile.mymanuals.dto.rating.RatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
@@ -203,6 +204,22 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
+    @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.PUT)
+    public void updateRatingForManual(@PathVariable("manualId") Long manualId,
+                               @RequestParam(value = "rating") int rating,
+                               @AuthenticationPrincipal Principal principal){
+        productService.updateRatingForManual(manualId, principal.getName(), rating);
+    }
+
+    @Override
+    @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.PUT)
+    public void updateRatingForVideo(@PathVariable("videoId") Long videoId,
+                              @RequestParam(value = "rating") int rating,
+                              @AuthenticationPrincipal Principal principal){
+        productService.updateRatingForVideo(videoId, principal.getName(), rating);
+    }
+
+    @Override
     @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.GET)
     public RatingDto getMyRatingForManual(@PathVariable("manualId") Long manualId,
                                     @AuthenticationPrincipal Principal principal) {
@@ -214,6 +231,18 @@ public class ProductControllerImpl implements ProductController {
     public RatingDto getMyRatingForVideo(@PathVariable("videoId") Long videoId,
                                          @AuthenticationPrincipal Principal principal) {
         return productService.getMyRatingForVideo(videoId, principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value="/manual/{manualId}/community-rating", method=RequestMethod.GET)
+    public AvgRatingDto getAvgRatingForManual(@PathVariable("manualId") Long manualId) {
+        return productService.getAvgRatingForManual(manualId);
+    }
+
+    @Override
+    @RequestMapping(value="/video/{videoId}/community-rating", method=RequestMethod.GET)
+    public AvgRatingDto getAvgRatingForVideo(@PathVariable("videoId") Long videoId) {
+        return productService.getAvgRatingForVideo(videoId);
     }
 
     // ------------------------------------------------------------
