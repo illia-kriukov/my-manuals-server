@@ -10,6 +10,8 @@ import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
 import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentCreateDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
@@ -108,5 +110,15 @@ public interface ProductController {
     @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
     List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
                                                      @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "/product/{productId}/comment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    void addCommentToProduct(@PathVariable("productId") Long productId,
+                    @RequestBody @Valid CommentCreateDto commentCreateDto,
+                    @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "/product/{productId}/comments", method = RequestMethod.GET)
+    List<CommentDto> listCommentsForProduct(@PathVariable("productId") Long productId,
+                                            @RequestParam(value = "page", required = false) Integer page,
+                                            @RequestParam(value = "count", required = false) Integer count);
 
 }
