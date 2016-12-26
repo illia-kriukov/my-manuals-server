@@ -3,6 +3,7 @@ package se.lnu.agile.mymanuals.dto.product;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public class ProductUpdateDto {
 
-
+    @NotNull(message = "Id should not be empty")
     private Long id;
 
     @NotBlank(message = "Name should not be empty")
@@ -28,8 +29,9 @@ public class ProductUpdateDto {
 
     private List<String> video;
 
-    //I don't think that we should have a NotEmpty annotation here. One could just remove manuals or change other info. Thymios
     private List<MultipartFile> file;
+
+    private List<Long> removedVideos;
 
     private List<Long> removedManuals;
 
@@ -79,6 +81,14 @@ public class ProductUpdateDto {
 
     public void setFile(List<MultipartFile> file) {
         this.file = file;
+    }
+
+    public List<Long> getRemovedVideos() {
+        return removedVideos;
+    }
+
+    public void setRemovedVideos(List<Long> removedVideos) {
+        this.removedVideos = removedVideos;
     }
 
     public List<Long> getRemovedManuals() {

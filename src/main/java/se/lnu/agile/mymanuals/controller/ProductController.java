@@ -23,8 +23,6 @@ import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * Created by ilyakruikov on 11/11/16.
@@ -39,9 +37,13 @@ public interface ProductController {
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
     List<CategoryDto> listCategories();
 
-    @RequestMapping(value="/product", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
+    @RequestMapping(value = "/product", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.CREATED)
     void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "/product/update", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    void updateProduct(@Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     List<ProductListDto> listProducts(@RequestParam(value="categories", required = false) List<Long> categories,
@@ -106,7 +108,5 @@ public interface ProductController {
     @RequestMapping(value="/video/{videoId}/annotation", method=RequestMethod.GET)
     List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
                                                      @AuthenticationPrincipal Principal principal);
-    @RequestMapping(value="/product/update", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.OK)
-    void updateProduct( @Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal);
+
 }

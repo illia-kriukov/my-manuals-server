@@ -54,5 +54,6 @@ public interface ProductService {
 
     List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail);
 
-    void updateProduct(ProductUpdateDto productUpdateDto, String name);
+    void updateProduct(ProductUpdateDto productUpdateDto, String representativeEmail);
+
 }

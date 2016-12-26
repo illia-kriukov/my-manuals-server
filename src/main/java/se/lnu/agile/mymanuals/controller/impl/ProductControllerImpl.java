@@ -35,7 +35,6 @@ import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -61,10 +60,17 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    @RequestMapping(value="/product", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
+    @RequestMapping(value = "/product", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
         productService.createProduct(productCreateDto, principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value = "/product/update", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void updateProduct(@Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal) {
+        productService.updateProduct(productUpdateDto, principal.getName());
     }
 
     @Override
@@ -180,13 +186,6 @@ public class ProductControllerImpl implements ProductController {
     public List<VideoAnnotationDto> listAnnotationsForVideo(@PathVariable("videoId") Long videoId,
                                                             @AuthenticationPrincipal Principal principal) {
         return productService.listAnnotationsForVideo(videoId, principal.getName());
-    }
-
-    @Override
-    @RequestMapping(value="/product/update", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.OK)
-    public void updateProduct(@Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal) {
-        productService.updateProduct(productUpdateDto, principal.getName());
     }
 
     @ExceptionHandler
