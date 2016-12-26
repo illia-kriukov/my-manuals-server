@@ -1,12 +1,13 @@
 package se.lnu.agile.mymanuals.model;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by Lo.Gas_2 on 21/12/2016.
  */
 @Entity
-public class ProductComment {
+public class Comment {
 
     @Id
     @GeneratedValue
@@ -20,14 +21,18 @@ public class ProductComment {
     private Product product;
 
     @Column(nullable = false)
+    private Date dateTime;
+
+    @Column(nullable = false)
     private String comment;
 
-    public ProductComment() {
+    public Comment() {
     }
 
-    public ProductComment(String userEmail, Product product, String comment) {
+    public Comment(String userEmail, Product product, Date dateTime, String comment) {
         this.userEmail = userEmail;
         this.product = product;
+        this.dateTime = dateTime;
         this.comment = comment;
     }
 
@@ -53,6 +58,14 @@ public class ProductComment {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public Date getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
     }
 
     public String getComment() {

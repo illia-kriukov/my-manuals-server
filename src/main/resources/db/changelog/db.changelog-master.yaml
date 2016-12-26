@@ -551,7 +551,7 @@ databaseChangeLog:
         author: illia.kriukov
         changes:
           - createTable:
-              tableName: product_comment
+              tableName: comment
               columns:
                 - column:
                     name: id
@@ -571,8 +571,13 @@ databaseChangeLog:
                     constraints:
                       nullable: false
                       foreignKey: true
-                      foreignKeyName: fk_pcomm_product_id
+                      foreignKeyName: fk_comm_product_id
                       reference: product(id)
+                - column:
+                    name: date_time
+                    type: datetime
+                    constraints:
+                      nullable: false
                 - column:
                     name: comment
                     type: text
@@ -580,8 +585,8 @@ databaseChangeLog:
                       nullable: false
           - addForeignKeyConstraint:
               baseColumnNames: product_id
-              baseTableName: product_comment
-              constraintName: fk_pcomm_product_id
+              baseTableName: comment
+              constraintName: fk_comm_product_id
               onDelete: CASCADE
               onUpdate: RESTRICT
               referencedColumnNames: id

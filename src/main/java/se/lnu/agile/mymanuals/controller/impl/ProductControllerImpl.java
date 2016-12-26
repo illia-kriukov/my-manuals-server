@@ -18,6 +18,7 @@ import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.dto.comment.CommentCreateDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
@@ -188,6 +189,14 @@ public class ProductControllerImpl implements ProductController {
                            @RequestBody @Valid CommentCreateDto commentCreateDto,
                            @AuthenticationPrincipal Principal principal) {
         productService.addCommentToProduct(productId, principal.getName(), commentCreateDto.getComment());
+    }
+
+    @Override
+    @RequestMapping(value = "/product/{productId}/comments", method = RequestMethod.GET)
+    public List<CommentDto> listCommentsForProduct(@PathVariable("productId") Long productId,
+                                                   @RequestParam(value = "page", required = false) Integer page,
+                                                   @RequestParam(value = "count", required = false) Integer count) {
+        return productService.listCommentsForProduct(productId, page, count);
     }
 
     @ExceptionHandler

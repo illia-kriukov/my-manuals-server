@@ -10,6 +10,7 @@ import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
 import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
@@ -64,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
     private VideoAnnotationDao videoAnnotationDao;
 
     @Autowired
-    private ProductCommentDao productCommentDao;
+    private CommentDao commentDao;
 
     @Autowired
     private CategoryListToCategoryDtoList categoryListConverter;
@@ -86,6 +87,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private VideoAnnotationListToVideoAnnotationDtoList videoAnnotationConverter;
+
+    @Autowired
+    private CommentToCommentDto commentConverter;
+
+    @Autowired
+    private CompanyToCompanyInfoDto companyInfoConverter;
 
     @Override
     public void createCategory(CategoryCreateDto dto) {
@@ -302,7 +309,43 @@ public class ProductServiceImpl implements ProductService {
     public void addCommentToProduct(Long productId, String userEmail, String comment) {
         Product product = productDao.findOne(productId);
         validateComment(consumerDao.findByEmail(userEmail), representativeDao.findByEmail(userEmail), product);
-        productCommentDao.save(new ProductComment(userEmail, product, comment));
+        commentDao.save(new Comment(userEmail, product, new Date(), comment));
+    }
+
+    @Override
+    public List<CommentDto> listCommentsForProduct(Long productId, Integer page, Integer count) {
+        List<CommentDto> result = new ArrayList<>();
+
+        if (page == null || count == null) {
+            page = DEFAULT_PAGE;
+            count = DEFAULT_COUNT;
+        }
+
+        Product product = productDao.findOne(productId);
+        if (product == null) throw new ProductException("Failed to create new comment. Product does not exist.");
+        List<Comment> commentList = commentDao.findAllByProduct(product, new PageRequest(page, count)).getContent();
+
+        if (commentList != null) {
+            Set<String> userEmailList = new HashSet(commentList.stream().map(Comment::getUserEmail).collect(Collectors.toList()));
+            List<Consumer> consumers = consumerDao.findByEmailIn(userEmailList);
+            List<Representative> representatives = representativeDao.findByEmailIn(userEmailList);
+
+            result = commentList.stream().map(c -> commentConverter.apply(c)).collect(Collectors.toList());
+            result.stream().forEach(c -> addAdditionalInfoToComment(c, consumers, representatives));
+        }
+
+        return result;
+    }
+
+    private void addAdditionalInfoToComment(CommentDto commentDto, List<Consumer> consumers, List<Representative> representatives) {
+        consumers.stream().filter(c -> commentDto.getUserEmail().equals(c.getEmail())).forEach(c -> {
+            commentDto.setUserName(c.getName());
+        });
+
+        representatives.stream().filter(r -> commentDto.getUserEmail().equals(r.getEmail())).forEach(r -> {
+            commentDto.setUserName(r.getName());
+            commentDto.setCompany(companyInfoConverter.apply(r.getCompany()));
+        });
     }
 
     /**
@@ -497,9 +540,9 @@ public class ProductServiceImpl implements ProductService {
      */
     private void validateComment(Consumer consumer, Representative representative, Product product) {
         if (consumer == null && representative == null ) {
-            throw new ProductException("There is no such user in our DB.");
+            throw new ProductException("Failed to create new comment. User does not exist.");
         } else if (product == null) {
-            throw new ProductException("There is no such product in our DB.");
+            throw new ProductException("Failed to create new comment. Product does not exist.");
         }
     }
 
