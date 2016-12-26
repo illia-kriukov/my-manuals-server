@@ -15,6 +15,7 @@ import se.lnu.agile.mymanuals.dto.comment.CommentDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,9 +39,13 @@ public interface ProductController {
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
     List<CategoryDto> listCategories();
 
-    @RequestMapping(value="/product", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
+    @RequestMapping(value = "/product", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.CREATED)
     void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value = "/product/update", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    void updateProduct(@Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     List<ProductListDto> listProducts(@RequestParam(value="categories", required = false) List<Long> categories,

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.BindException;
@@ -23,6 +22,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
 import se.lnu.agile.mymanuals.error.ValidationErrorBuilder;
@@ -62,10 +62,17 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    @RequestMapping(value="/product", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
+    @RequestMapping(value = "/product", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
         productService.createProduct(productCreateDto, principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value = "/product/update", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void updateProduct(@Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal) {
+        productService.updateProduct(productUpdateDto, principal.getName());
     }
 
     @Override

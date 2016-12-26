@@ -15,6 +15,7 @@ import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
 import se.lnu.agile.mymanuals.model.*;
@@ -111,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void createProduct(ProductCreateDto dto, String representativeEmail) {
         Company company = representativeDao.findByEmail(representativeEmail).getCompany();
-        if (validateProduct(dto, company.getId())) {
+        if (validateCreateProduct(dto, company.getId())) {
             List<Manual> manuals = new ArrayList<>();
             List<Video> videos = new ArrayList<>();
             Product product = new Product(dto.getName(), dto.getModel(), categoryDao.findAll(dto.getCategory()), company, manuals, videos);
@@ -141,6 +142,61 @@ public class ProductServiceImpl implements ProductService {
                 video.setProduct(product);
                 videos.add(video);
             }
+        }
+    }
+
+    @Override
+    public void updateProduct(ProductUpdateDto productUpdateDto, String representativeEmail) {
+        Product product = productDao.findOne(productUpdateDto.getId());
+        Representative representative = representativeDao.findByEmail(representativeEmail);
+        validateUpdateProduct(product, representative);
+
+        product.setName(productUpdateDto.getName());
+        product.setModel(productUpdateDto.getModel());
+        product.setCompany(representativeDao.findByEmail(representativeEmail).getCompany());
+        product.setCategory(categoryDao.findAll(productUpdateDto.getCategory()));
+
+        updateManuals(productUpdateDto, product);
+        updateVideos(productUpdateDto, product);
+
+        productDao.save(product);
+    }
+
+    private void updateManuals(ProductUpdateDto productUpdateDto, Product product) {
+        List<Manual> manuals = product.getManual();
+        List<Long> removedManuals = productUpdateDto.getRemovedManuals();
+        if (manuals != null && removedManuals != null) {
+            Iterator<Manual> i = manuals.iterator();
+            while (i.hasNext()) {
+                Manual manual = i.next();
+                if (removedManuals.contains(manual.getId())) {
+                    manual.setProduct(null);
+                    i.remove();
+                    manualDao.delete(manual);
+                }
+            }
+        }
+        if (productUpdateDto.getFile() != null){
+            addManuals(productUpdateDto.getFile(), product, manuals);
+        }
+    }
+
+    private void updateVideos(ProductUpdateDto productUpdateDto, Product product) {
+        List<Video> videos = product.getVideo();
+        List<Long> removedVideos = productUpdateDto.getRemovedVideos();
+        if (videos != null && removedVideos != null) {
+            Iterator<Video> i = videos.iterator();
+            while (i.hasNext()) {
+                Video video = i.next();
+                if (removedVideos.contains(video.getId())) {
+                    video.setProduct(null);
+                    i.remove();
+                    videoDao.delete(video);
+                }
+            }
+        }
+        if (productUpdateDto.getVideo() != null){
+            addVideos(productUpdateDto.getVideo(), product, videos);
         }
     }
 
@@ -410,7 +466,7 @@ public class ProductServiceImpl implements ProductService {
      * -> Number of categories must not be over 3
      * -> Video links are not over 300 characters long
      */
-    private boolean validateProduct(ProductCreateDto dto, Long companyId) {
+    private boolean validateCreateProduct(ProductCreateDto dto, Long companyId) {
         if (productDao.getModelByCompanyId(companyId, dto.getModel()) != null) {
             throw new ProductException("Company already has product with such model");
         }
@@ -437,6 +493,21 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return true;
+    }
+
+    /**
+     * Perform validation of product's data at updating.
+     *
+     * Checks:
+     * -> Product exist in DB
+     * -> Representative and product has the same company
+     */
+    private void validateUpdateProduct(Product product, Representative representative) {
+        if (product == null) {
+            throw new ProductException("Failed to update product. Product does not exist.");
+        } else if (!representative.getCompany().getId().equals(product.getCompany().getId())) {
+            throw new ProductException("Failed to update product. You are not a representative of a company that owns this product.");
+        }
     }
 
     /**
