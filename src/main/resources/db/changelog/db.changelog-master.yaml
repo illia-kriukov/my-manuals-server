@@ -547,7 +547,7 @@ databaseChangeLog:
               referencedColumnNames: id
               referencedTableName: consumer
   - changeSet:
-        id: 24
+        id: 25
         author: daniel.paque
         changes:
           - createTable:
@@ -613,7 +613,7 @@ databaseChangeLog:
                     constraints:
                       nullable: false
                       foreignKey: true
-                      foreignKeyName: fk_vrat_manual_id
+                      foreignKeyName: fk_vrat_video_id
                       reference: video(id)
                 - column:
                     name: consumer_id
@@ -631,7 +631,7 @@ databaseChangeLog:
           - addForeignKeyConstraint:
               baseColumnNames: video_id
               baseTableName: video_rating
-              constraintName: fk_vrat_manual_id
+              constraintName: fk_vrat_video_id
               onDelete: CASCADE
               onUpdate: RESTRICT
               referencedColumnNames: id

@@ -24,4 +24,5 @@ public class AvgRatingDto {
     public void setRatingCount(Long ratingCounter) {
         this.ratingCount = ratingCounter;
     }
+
 }

@@ -19,4 +19,5 @@ public class AvgRatingToAvgRatingDto implements Function<AvgRating, AvgRatingDto
         BeanUtils.copyProperties(avgRating, avgRatingDto);
         return avgRatingDto;
     }
+
 }

@@ -9,13 +9,13 @@ public class AvgRating {
 
     private long ratingCount;
 
-    public AvgRating(){
-
+    public AvgRating() {
     }
 
     public AvgRating(Double avgRating, Long ratingCount) {
-        if (avgRating == null || ratingCount == null)
+        if (avgRating == null || ratingCount == null) {
             return;
+        }
         this.avgRating = avgRating;
         this.ratingCount = ratingCount;
     }
@@ -35,4 +35,5 @@ public class AvgRating {
     public void setRatingCount(long ratingCount) {
         this.ratingCount = ratingCount;
     }
+
 }

@@ -284,8 +284,8 @@ public class ProductServiceImpl implements ProductService {
     public void addAnnotationToVideo(Long videoId, String consumerEmail, String annotation) {
         Video video = videoDao.findOne(videoId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
-        checkConsumerNotNull(consumer);
         checkVideoNotNull(video);
+        checkConsumerNotNull(consumer);
         VideoAnnotation videoAnnotation = new VideoAnnotation(video, consumer, annotation);
         videoAnnotationDao.save(videoAnnotation);
 
@@ -349,6 +349,7 @@ public class ProductServiceImpl implements ProductService {
     public Integer getMyRatingForManual(Long manualId, String consumerEmail) {
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
         checkManualNotNull(manualDao.findOne(manualId));
+        checkConsumerNotNull(consumer);
         ManualRating manualRating = manualRatingDao.findByManual_idAndConsumer_id(manualId, consumer.getId());
         return manualRating == null ? null : manualRating.getRating();
     }
@@ -357,21 +358,20 @@ public class ProductServiceImpl implements ProductService {
     public Integer getMyRatingForVideo(Long videoId, String consumerEmail) {
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
         checkVideoNotNull(videoDao.findOne(videoId));
+        checkConsumerNotNull(consumer);
         VideoRating videoRating = videoRatingDao.findByVideo_idAndConsumer_id(videoId, consumer.getId());
         return videoRating == null ? null : videoRating.getRating();
     }
 
     @Override
     public AvgRatingDto getAvgRatingForManual(Long manualId) {
-        //Check that there exist a manual for the given id
         checkManualNotNull(manualDao.findOne(manualId));
-        AvgRating avgRating =  manualRatingDao.getAvgRatingAndRatingCount(manualId);
+        AvgRating avgRating = manualRatingDao.getAvgRatingAndRatingCount(manualId);
         return avgRating == null ? null : avgRatingConverter.apply(avgRating);
     }
 
     @Override
     public AvgRatingDto getAvgRatingForVideo(Long videoId) {
-        //Check that there exist a video for the given id
         checkVideoNotNull(videoDao.findOne(videoId));
         AvgRating avgRating = videoRatingDao.getAvgRatingAndRatingCount(videoId);
         return avgRating == null ? null : avgRatingConverter.apply(avgRating);
@@ -573,7 +573,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Checks
+     * Checks:
      * - manual not null
      * - consumer not null
      * - check rating (in correct range)
@@ -590,7 +590,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Checks
+     * Checks:
      * - video not null
      * - consumer not null
      * - check rating (in correct range)
@@ -607,7 +607,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Checks
+     * Checks:
      * - manual not null
      * - consumer not null
      * - that there exists already a rating for this manual for this consumer
@@ -623,7 +623,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Checks
+     * Checks:
      * - video not null
      * - consumer not null
      * - that there exists already a rating for this video for this consumer

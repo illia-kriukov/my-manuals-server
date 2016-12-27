@@ -23,7 +23,7 @@ public class VideoRating {
     @Column(nullable = false)
     private int rating;
 
-    public VideoRating(){
+    public VideoRating() {
     }
 
     public VideoRating(Video video, Consumer consumer, int rating) {
@@ -63,4 +63,5 @@ public class VideoRating {
     public void setRating(int rating) {
         this.rating = rating;
     }
+
 }
