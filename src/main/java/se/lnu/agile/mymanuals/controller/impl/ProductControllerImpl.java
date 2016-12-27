@@ -16,10 +16,13 @@ import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
 import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentCreateDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.error.ValidationError;
@@ -60,10 +63,17 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    @RequestMapping(value="/product", method=RequestMethod.POST)
-    @ResponseStatus(value= HttpStatus.CREATED)
+    @RequestMapping(value = "/product", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public void createProduct(@Valid ProductCreateDto productCreateDto, @AuthenticationPrincipal Principal principal) {
         productService.createProduct(productCreateDto, principal.getName());
+    }
+
+    @Override
+    @RequestMapping(value = "/product/update", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void updateProduct(@Valid ProductUpdateDto productUpdateDto, @AuthenticationPrincipal Principal principal) {
+        productService.updateProduct(productUpdateDto, principal.getName());
     }
 
     @Override
@@ -182,6 +192,22 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
+    @RequestMapping(value = "/product/{productId}/comment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addCommentToProduct(@PathVariable("productId") Long productId,
+                           @RequestBody @Valid CommentCreateDto commentCreateDto,
+                           @AuthenticationPrincipal Principal principal) {
+        productService.addCommentToProduct(productId, principal.getName(), commentCreateDto.getComment());
+    }
+
+    @Override
+    @RequestMapping(value = "/product/{productId}/comments", method = RequestMethod.GET)
+    public List<CommentDto> listCommentsForProduct(@PathVariable("productId") Long productId,
+                                                   @RequestParam(value = "page", required = false) Integer page,
+                                                   @RequestParam(value = "count", required = false) Integer count) {
+        return productService.listCommentsForProduct(productId, page, count);
+    }
+
+    @Override
     @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.POST)
     public void createRatingForManual(@PathVariable("manualId") Long manualId,
                                       @RequestParam(value = "rating") int rating,
@@ -201,30 +227,30 @@ public class ProductControllerImpl implements ProductController {
     @Override
     @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.PUT)
     public void updateRatingForManual(@PathVariable("manualId") Long manualId,
-                               @RequestParam(value = "rating") int rating,
-                               @AuthenticationPrincipal Principal principal){
+                                      @RequestParam(value = "rating") int rating,
+                                      @AuthenticationPrincipal Principal principal){
         productService.updateRatingForManual(manualId, principal.getName(), rating);
     }
 
     @Override
     @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.PUT)
     public void updateRatingForVideo(@PathVariable("videoId") Long videoId,
-                              @RequestParam(value = "rating") int rating,
-                              @AuthenticationPrincipal Principal principal){
+                                     @RequestParam(value = "rating") int rating,
+                                     @AuthenticationPrincipal Principal principal){
         productService.updateRatingForVideo(videoId, principal.getName(), rating);
     }
 
     @Override
     @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.GET)
     public Integer getMyRatingForManual(@PathVariable("manualId") Long manualId,
-                                    @AuthenticationPrincipal Principal principal) {
+                                        @AuthenticationPrincipal Principal principal) {
         return productService.getMyRatingForManual(manualId, principal.getName());
     }
 
     @Override
     @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.GET)
     public Integer getMyRatingForVideo(@PathVariable("videoId") Long videoId,
-                                         @AuthenticationPrincipal Principal principal) {
+                                       @AuthenticationPrincipal Principal principal) {
         return productService.getMyRatingForVideo(videoId, principal.getName());
     }
 

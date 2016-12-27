@@ -10,10 +10,12 @@ import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
 import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 import se.lnu.agile.mymanuals.exception.ProductException;
@@ -65,6 +67,9 @@ public class ProductServiceImpl implements ProductService {
     private VideoAnnotationDao videoAnnotationDao;
 
     @Autowired
+    private CommentDao commentDao;
+
+    @Autowired
     private ManualRatingDao manualRatingDao;
 
     @Autowired
@@ -92,6 +97,12 @@ public class ProductServiceImpl implements ProductService {
     private VideoAnnotationListToVideoAnnotationDtoList videoAnnotationConverter;
 
     @Autowired
+    private CommentToCommentDto commentConverter;
+
+    @Autowired
+    private CompanyToCompanyInfoDto companyInfoConverter;
+
+    @Autowired
     private AvgRatingToAvgRatingDto avgRatingConverter;
 
     @Override
@@ -111,7 +122,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void createProduct(ProductCreateDto dto, String representativeEmail) {
         Company company = representativeDao.findByEmail(representativeEmail).getCompany();
-        if (validateProduct(dto, company.getId())) {
+        if (validateCreateProduct(dto, company.getId())) {
             List<Manual> manuals = new ArrayList<>();
             List<Video> videos = new ArrayList<>();
             Product product = new Product(dto.getName(), dto.getModel(), categoryDao.findAll(dto.getCategory()), company, manuals, videos);
@@ -141,6 +152,61 @@ public class ProductServiceImpl implements ProductService {
                 video.setProduct(product);
                 videos.add(video);
             }
+        }
+    }
+
+    @Override
+    public void updateProduct(ProductUpdateDto productUpdateDto, String representativeEmail) {
+        Product product = productDao.findOne(productUpdateDto.getId());
+        Representative representative = representativeDao.findByEmail(representativeEmail);
+        validateUpdateProduct(product, representative);
+
+        product.setName(productUpdateDto.getName());
+        product.setModel(productUpdateDto.getModel());
+        product.setCompany(representativeDao.findByEmail(representativeEmail).getCompany());
+        product.setCategory(categoryDao.findAll(productUpdateDto.getCategory()));
+
+        updateManuals(productUpdateDto, product);
+        updateVideos(productUpdateDto, product);
+
+        productDao.save(product);
+    }
+
+    private void updateManuals(ProductUpdateDto productUpdateDto, Product product) {
+        List<Manual> manuals = product.getManual();
+        List<Long> removedManuals = productUpdateDto.getRemovedManuals();
+        if (manuals != null && removedManuals != null) {
+            Iterator<Manual> i = manuals.iterator();
+            while (i.hasNext()) {
+                Manual manual = i.next();
+                if (removedManuals.contains(manual.getId())) {
+                    manual.setProduct(null);
+                    i.remove();
+                    manualDao.delete(manual);
+                }
+            }
+        }
+        if (productUpdateDto.getFile() != null){
+            addManuals(productUpdateDto.getFile(), product, manuals);
+        }
+    }
+
+    private void updateVideos(ProductUpdateDto productUpdateDto, Product product) {
+        List<Video> videos = product.getVideo();
+        List<Long> removedVideos = productUpdateDto.getRemovedVideos();
+        if (videos != null && removedVideos != null) {
+            Iterator<Video> i = videos.iterator();
+            while (i.hasNext()) {
+                Video video = i.next();
+                if (removedVideos.contains(video.getId())) {
+                    video.setProduct(null);
+                    i.remove();
+                    videoDao.delete(video);
+                }
+            }
+        }
+        if (productUpdateDto.getVideo() != null){
+            addVideos(productUpdateDto.getVideo(), product, videos);
         }
     }
 
@@ -308,6 +374,49 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public void addCommentToProduct(Long productId, String userEmail, String comment) {
+        Product product = productDao.findOne(productId);
+        validateComment(consumerDao.findByEmail(userEmail), representativeDao.findByEmail(userEmail), product);
+        commentDao.save(new Comment(userEmail, product, new Date(), comment));
+    }
+
+    @Override
+    public List<CommentDto> listCommentsForProduct(Long productId, Integer page, Integer count) {
+        List<CommentDto> result = new ArrayList<>();
+
+        if (page == null || count == null) {
+            page = DEFAULT_PAGE;
+            count = DEFAULT_COUNT;
+        }
+
+        Product product = productDao.findOne(productId);
+        if (product == null) throw new ProductException("Failed to create new comment. Product does not exist.");
+        List<Comment> commentList = commentDao.findAllByProduct(product, new PageRequest(page, count)).getContent();
+
+        if (commentList != null) {
+            Set<String> userEmailList = new HashSet(commentList.stream().map(Comment::getUserEmail).collect(Collectors.toList()));
+            List<Consumer> consumers = consumerDao.findByEmailIn(userEmailList);
+            List<Representative> representatives = representativeDao.findByEmailIn(userEmailList);
+
+            result = commentList.stream().map(c -> commentConverter.apply(c)).collect(Collectors.toList());
+            result.stream().forEach(c -> addAdditionalInfoToComment(c, consumers, representatives));
+        }
+
+        return result;
+    }
+
+    private void addAdditionalInfoToComment(CommentDto commentDto, List<Consumer> consumers, List<Representative> representatives) {
+        consumers.stream().filter(c -> commentDto.getUserEmail().equals(c.getEmail())).forEach(c -> {
+            commentDto.setUserName(c.getName());
+        });
+
+        representatives.stream().filter(r -> commentDto.getUserEmail().equals(r.getEmail())).forEach(r -> {
+            commentDto.setUserName(r.getName());
+            commentDto.setCompany(companyInfoConverter.apply(r.getCompany()));
+        });
+    }
+
+    @Override
     public void createRatingForManual(Long manualId, String consumerEmail, int rating) {
         Manual manual = manualDao.findOne(manualId);
         Consumer consumer = consumerDao.findByEmail(consumerEmail);
@@ -439,7 +548,7 @@ public class ProductServiceImpl implements ProductService {
      * -> Number of categories must not be over 3
      * -> Video links are not over 300 characters long
      */
-    private boolean validateProduct(ProductCreateDto dto, Long companyId) {
+    private boolean validateCreateProduct(ProductCreateDto dto, Long companyId) {
         if (productDao.getModelByCompanyId(companyId, dto.getModel()) != null) {
             throw new ProductException("Company already has product with such model");
         }
@@ -466,6 +575,21 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return true;
+    }
+
+    /**
+     * Perform validation of product's data at updating.
+     *
+     * Checks:
+     * -> Product exist in DB
+     * -> Representative and product has the same company
+     */
+    private void validateUpdateProduct(Product product, Representative representative) {
+        if (product == null) {
+            throw new ProductException("Failed to update product. Product does not exist.");
+        } else if (!representative.getCompany().getId().equals(product.getCompany().getId())) {
+            throw new ProductException("Failed to update product. You are not a representative of a company that owns this product.");
+        }
     }
 
     /**
@@ -559,6 +683,20 @@ public class ProductServiceImpl implements ProductService {
         if (consumer == null) {
             String msg = "Unknown user account. Please, try again.";
             throw new ProductException(msg);
+        }
+    }
+
+    /**
+     * Perform validation of the new comment.
+     *
+     * Checks:
+     * -> User and Product exist in the database
+     */
+    private void validateComment(Consumer consumer, Representative representative, Product product) {
+        if (consumer == null && representative == null ) {
+            throw new ProductException("Failed to create new comment. User does not exist.");
+        } else if (product == null) {
+            throw new ProductException("Failed to create new comment. Product does not exist.");
         }
     }
 

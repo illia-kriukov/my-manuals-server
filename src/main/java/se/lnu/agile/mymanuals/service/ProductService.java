@@ -1,13 +1,16 @@
 package se.lnu.agile.mymanuals.service;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import se.lnu.agile.mymanuals.dto.annotation.ManualAnnotationDto;
 import se.lnu.agile.mymanuals.dto.annotation.VideoAnnotationDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryCreateDto;
 import se.lnu.agile.mymanuals.dto.category.CategoryDto;
+import se.lnu.agile.mymanuals.dto.comment.CommentDto;
 import se.lnu.agile.mymanuals.dto.manual.ManualDto;
 import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
+import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
 import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
@@ -23,6 +26,8 @@ public interface ProductService {
     List<CategoryDto> listCategories();
 
     void createProduct(ProductCreateDto dto, String representativeEmail);
+
+    void updateProduct(ProductUpdateDto productUpdateDto, String representativeEmail);
 
     List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count, String consumerEmail);
 
@@ -53,6 +58,10 @@ public interface ProductService {
     List<ManualAnnotationDto> listAnnotationsForManual(Long manualId, String consumerEmail);
 
     List<VideoAnnotationDto> listAnnotationsForVideo(Long videoId, String consumerEmail);
+
+    void addCommentToProduct(Long productId, String userEmail, String comment);
+
+    List<CommentDto> listCommentsForProduct(Long productId, Integer page, Integer count);
 
     void createRatingForManual(Long manualId, String consumerEmail, int rating);
 
