@@ -1,12 +1,12 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.company;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
- * Created by ilyakruikov on 11/11/16.
+ * Created by ilyakruikov on 11/15/16.
  */
-public class RepresentativeSignUpDto {
+public class CompanyCreateDto {
 
     @NotNull(message = "Email should not be empty.")
     @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",
@@ -14,20 +14,14 @@ public class RepresentativeSignUpDto {
     private String email;
 
     @NotNull(message = "Password should not be empty.")
-    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$",
-            message = "Password should be at least 6 symbols.")
+    @Pattern(regexp = "^[\\d\\w@#$%\\{\\}\\(\\)]{6,20}$", message = "Password should be at least 6 symbols.")
     private String password;
 
     @NotNull(message = "Name should not be empty.")
-    @Pattern(regexp = "^[a-zA-Z- ]*$",
-            message = "Name can contains only letters and '-'.")
+    @Pattern(regexp = "^[A-Z]([a-zA-Z0-9]|[- @\\.#&!])*$", message = "Incorrect company name format.")
     private String name;
 
-    @NotNull(message = "Company email should not be empty.")
-    private String companyEmail;
-
-    @NotNull(message = "Company password should not be empty.")
-    private String companyPassword;
+    private String description;
 
     public String getEmail() {
         return email;
@@ -53,20 +47,12 @@ public class RepresentativeSignUpDto {
         this.name = name;
     }
 
-    public String getCompanyEmail() {
-        return companyEmail;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCompanyEmail(String companyEmail) {
-        this.companyEmail = companyEmail;
-    }
-
-    public String getCompanyPassword() {
-        return companyPassword;
-    }
-
-    public void setCompanyPassword(String companyPassword) {
-        this.companyPassword = companyPassword;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

@@ -3,7 +3,7 @@ package se.lnu.agile.mymanuals.converter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.stereotype.Component;
-import se.lnu.agile.mymanuals.dto.CategoryDto;
+import se.lnu.agile.mymanuals.dto.category.CategoryDto;
 import se.lnu.agile.mymanuals.model.Category;
 
 import java.util.LinkedList;

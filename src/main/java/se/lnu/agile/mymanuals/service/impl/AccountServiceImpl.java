@@ -2,20 +2,21 @@ package se.lnu.agile.mymanuals.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.lnu.agile.mymanuals.converter.CategoryListToCategoryDtoList;
-import se.lnu.agile.mymanuals.converter.CompanyToCompanyDto;
-import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeDto;
-import se.lnu.agile.mymanuals.dao.CategoryDao;
+import se.lnu.agile.mymanuals.converter.ConsumerToConsumerInfoDto;
+import se.lnu.agile.mymanuals.converter.RepresentativeToRepresentativeInfoDto;
 import se.lnu.agile.mymanuals.dao.CompanyDao;
 import se.lnu.agile.mymanuals.dao.RepresentativeDao;
-import se.lnu.agile.mymanuals.dto.*;
+import se.lnu.agile.mymanuals.dao.ConsumerDao;
+import se.lnu.agile.mymanuals.dto.company.CompanyCreateDto;
+import se.lnu.agile.mymanuals.dto.consumer.ConsumerInfoDto;
+import se.lnu.agile.mymanuals.dto.consumer.ConsumerSignUpDto;
+import se.lnu.agile.mymanuals.dto.representative.RepresentativeInfoDto;
+import se.lnu.agile.mymanuals.dto.representative.RepresentativeSignUpDto;
 import se.lnu.agile.mymanuals.exception.RegistrationException;
-import se.lnu.agile.mymanuals.model.Category;
 import se.lnu.agile.mymanuals.model.Company;
 import se.lnu.agile.mymanuals.model.Representative;
+import se.lnu.agile.mymanuals.model.Consumer;
 import se.lnu.agile.mymanuals.service.AccountService;
-
-import java.util.List;
 
 /**
  * Created by ilyakruikov on 11/10/16.
@@ -30,29 +31,20 @@ public class AccountServiceImpl implements AccountService {
     private RepresentativeDao representativeDao;
 
     @Autowired
-    private CategoryDao categoryDao;
+    private ConsumerDao consumerDao;
 
     @Autowired
-    private CompanyToCompanyDto companyConverter;
+    private RepresentativeToRepresentativeInfoDto representativeInfoConverter;
 
     @Autowired
-    private RepresentativeToRepresentativeDto representativeConverter;
-
-    @Autowired
-    private CategoryListToCategoryDtoList categoryListConverter;
+    private ConsumerToConsumerInfoDto consumerInfoConverter;
 
     @Override
-    public void createCompany(CompanySignUpDto dto) {
+    public void createCompany(CompanyCreateDto dto) {
         if (validateCompanySignUp(dto.getEmail())) {
             Company company = new Company(dto.getEmail(), dto.getPassword(), dto.getName(), dto.getDescription());
             companyDao.save(company);
         }
-    }
-
-    @Override
-    public RepresentativeDto getRepresentative(String email) {
-        Representative representative = representativeDao.findByEmail(email);
-        return representative != null ? representativeConverter.apply(representative) : null;
     }
 
     @Override
@@ -66,17 +58,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void createCategory(CategorySignUpDto dto) {
-        if (validateCategorySignUp(dto.getName())){
-            Category category = new Category(dto.getName());
-            categoryDao.save(category);
+    public RepresentativeInfoDto getRepresentativeInfo(String email) {
+        Representative representative = representativeDao.findByEmail(email);
+        return representative != null ? representativeInfoConverter.apply(representative) : null;
+    }
+
+    @Override
+    public void createConsumer(ConsumerSignUpDto dto) {
+        if (validateConsumerSignUp(dto.getEmail())) {
+            Consumer consumer = new Consumer(dto.getEmail(), dto.getPassword(),dto.getName());
+            consumerDao.save(consumer);
         }
     }
 
     @Override
-    public List<CategoryDto> listCategories() {
-        List<Category> categoryList = categoryDao.findAll();
-        return categoryList != null ? categoryListConverter.apply(categoryList) : null;
+    public ConsumerInfoDto getConsumerInfo(String email) {
+        Consumer consumer = consumerDao.findByEmail(email);
+        return consumer != null ? consumerInfoConverter.apply(consumer) : null;
     }
 
     /**
@@ -128,16 +126,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Perform validation of the category's data at Sign-Up.
+     * Perform validation of the consumer's data at Sign-Up.
      *
      * Checks:
-     * -> Category name doesn't exists in category table
+     * -> Consumer email doesn't exists in consumer table
+     * -> Consumer email doesn't exists in representative table
      */
-    private boolean validateCategorySignUp(String name){
-        if (categoryDao.findByName(name) != null) {
-            String msg = "Failed to create category '%s'. A category with such name already exists.";
+    private boolean validateConsumerSignUp(String name){
+        if (consumerDao.findByEmail(name) != null) {
+            String msg = "Failed to create consumer '%s'. A consumer with such email already exists.";
             throw new RegistrationException(String.format(msg, name));
         }
+
+        if (representativeDao.findByEmail(name) != null) {
+            String msg = "Failed to create consumer '%s'. A representative with such email already exists.";
+            throw new RegistrationException(String.format(msg, name));
+        }
+
         return true;
     }
 

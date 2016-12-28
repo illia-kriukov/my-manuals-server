@@ -1,4 +1,4 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.company;
 
 /**
  * Created by ilyakruikov on 11/11/16.

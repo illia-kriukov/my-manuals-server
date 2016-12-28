@@ -1,4 +1,6 @@
-package se.lnu.agile.mymanuals.dto;
+package se.lnu.agile.mymanuals.dto.representative;
+
+import se.lnu.agile.mymanuals.dto.company.CompanyDto;
 
 /**
  * Created by ilyakruikov on 11/11/16.

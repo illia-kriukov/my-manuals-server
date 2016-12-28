@@ -9,3 +9,6 @@ spring:
       test-while-idle: true
       test-on-borrow: true
       validation-query: SELECT 1
+  http:
+      multipart:
+          maxFileSize: 100Mb
