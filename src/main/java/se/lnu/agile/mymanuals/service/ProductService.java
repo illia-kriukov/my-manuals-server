@@ -11,6 +11,7 @@ import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
+import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public interface ProductService {
     List<CategoryDto> listCategories();
 
     void createProduct(ProductCreateDto dto, String representativeEmail);
+
+    void updateProduct(ProductUpdateDto productUpdateDto, String representativeEmail);
 
     List<ProductListDto> listProducts(List<Long> categoryIds, Integer page, Integer count, String consumerEmail);
 
@@ -60,6 +63,20 @@ public interface ProductService {
 
     List<CommentDto> listCommentsForProduct(Long productId, Integer page, Integer count);
 
-    void updateProduct(ProductUpdateDto productUpdateDto, String representativeEmail);
+    void createRatingForManual(Long manualId, String consumerEmail, int rating);
+
+    void createRatingForVideo(Long videoId, String consumerEmail, int rating);
+
+    void updateRatingForManual(Long manualId, String consumerEmail, int rating);
+
+    void updateRatingForVideo(Long videoId, String consumerEmail, int rating);
+
+    Integer getMyRatingForManual(Long manualId, String consumerEmail);
+
+    Integer getMyRatingForVideo(Long manualId, String consumerEmail);
+
+    AvgRatingDto getAvgRatingForManual(Long manualId);
+
+    AvgRatingDto getAvgRatingForVideo(Long videoId);
 
 }

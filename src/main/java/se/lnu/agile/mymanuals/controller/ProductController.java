@@ -16,6 +16,7 @@ import se.lnu.agile.mymanuals.dto.product.ProductCreateDto;
 import se.lnu.agile.mymanuals.dto.product.ProductDto;
 import se.lnu.agile.mymanuals.dto.product.ProductListDto;
 import se.lnu.agile.mymanuals.dto.product.ProductUpdateDto;
+import se.lnu.agile.mymanuals.dto.rating.AvgRatingDto;
 import se.lnu.agile.mymanuals.dto.subscription.SubscriptionDto;
 
 import javax.servlet.http.HttpServletResponse;
@@ -113,12 +114,46 @@ public interface ProductController {
 
     @RequestMapping(value = "/product/{productId}/comment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     void addCommentToProduct(@PathVariable("productId") Long productId,
-                    @RequestBody @Valid CommentCreateDto commentCreateDto,
-                    @AuthenticationPrincipal Principal principal);
+                             @RequestBody @Valid CommentCreateDto commentCreateDto,
+                             @AuthenticationPrincipal Principal principal);
 
     @RequestMapping(value = "/product/{productId}/comments", method = RequestMethod.GET)
     List<CommentDto> listCommentsForProduct(@PathVariable("productId") Long productId,
                                             @RequestParam(value = "page", required = false) Integer page,
                                             @RequestParam(value = "count", required = false) Integer count);
+
+    @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.POST)
+    void createRatingForManual(@PathVariable("manualId") Long manualId,
+                               @RequestParam(value = "rating") int rating,
+                               @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.POST)
+    void createRatingForVideo(@PathVariable("videoId") Long videoId,
+                              @RequestParam(value = "rating") int rating,
+                              @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.PUT)
+    void updateRatingForManual(@PathVariable("manualId") Long manualId,
+                               @RequestParam(value = "rating") int rating,
+                               @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.PUT)
+    void updateRatingForVideo(@PathVariable("videoId") Long videoId,
+                              @RequestParam(value = "rating") int rating,
+                              @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/manual/{manualId}/rating", method=RequestMethod.GET)
+    Integer getMyRatingForManual(@PathVariable("manualId") Long manualId,
+                                 @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/video/{videoId}/rating", method=RequestMethod.GET)
+    Integer getMyRatingForVideo(@PathVariable("videoId") Long videoId,
+                                @AuthenticationPrincipal Principal principal);
+
+    @RequestMapping(value="/manual/{manualId}/community-rating", method=RequestMethod.GET)
+    AvgRatingDto getAvgRatingForManual(@PathVariable("manualId") Long manualId);
+
+    @RequestMapping(value="/video/{videoId}/community-rating", method=RequestMethod.GET)
+    AvgRatingDto getAvgRatingForVideo(@PathVariable("videoId") Long videoId);
 
 }
