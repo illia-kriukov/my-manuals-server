@@ -8,7 +8,7 @@ Back-end part of the "My Manuals" application by Team A. Autumn 2016.
 4. Navigate to the root folder;
 5. Run .sh (if you use Unix based OS) or .bat (for Windows OS) file.
 
-Note: Before running set up you MySQL for storing manual files. Add next settings to my.cnf file:
+Note: Before running set up you MySQL for storing manual files. Add next settings to my.cnf file into [mysqld] section:
 
 ```
 max_allowed_packet = 100M
