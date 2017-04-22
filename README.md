@@ -1,6 +1,8 @@
 # my-manuals-server
 Back-end part of the "My Manuals" application by Team A. Autumn 2016.
 
+![Alt text](software_architecture.png?raw=true "Software architecture diagram")
+
 # How-to run the project
 1. Run MySQL server;
 2. Make sure that 'root' user has no password;
